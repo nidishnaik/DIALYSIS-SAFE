@@ -1,29 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialysis Food Safety Checker - AI Powered</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>DialysisSafe - AI Renal Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600&display=swap');
-        
-        :root { --primary: 234 179 8; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&family=Space+Grotesk:wght@600&display=swap');
         .tail-container { font-family: 'Inter', system_ui, sans-serif; }
         .logo-font { font-family: 'Space Grotesk', sans-serif; }
-        .upload-zone { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .upload-zone.dragover { background-color: rgb(245 158 11 / 0.1); border-color: rgb(234 179 8); }
-        .result-card { animation: slideUp 0.5s ease forwards; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .status-badge { background: linear-gradient(135deg, #10b981, #34d399); }
+        .progress-bar-fill { transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        #camera-modal { display: none; }
+        #camera-modal.active { display: flex; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
     </style>
 </head>
-<body class="tail-container bg-zinc-950 text-zinc-200 min-h-screen">
+<body class="tail-container bg-zinc-950 text-zinc-200 min-h-screen pb-24">
     <div class="max-w-5xl mx-auto">
         <header class="border-b border-zinc-800 bg-zinc-950 sticky top-0 z-50">
             <div class="px-8 py-5 flex flex-wrap gap-4 items-center justify-between">
@@ -33,406 +28,340 @@
                     </div>
                     <div>
                         <h1 class="logo-font text-3xl font-semibold tracking-tighter text-white">DialysisSafe</h1>
-                        <p class="text-[10px] text-yellow-400 tracking-[2px] -mt-1">AI FOOD CHECKER</p>
+                        <p class="text-[10px] text-yellow-400 tracking-[2px] -mt-1 uppercase">AI Renal Assistant | एआय किडनी सहाय्यक</p>
                     </div>
                 </div>
-
-                <div class="flex items-center gap-x-4">
-                    <input type="password" id="api-key" placeholder="Paste Gemini API Key" 
-                           class="px-4 py-2 bg-zinc-900 border border-zinc-700 rounded-3xl text-xs text-white focus:border-yellow-400 focus:outline-none w-48 transition-colors">
-                    <div class="px-4 py-2 bg-zinc-900 rounded-3xl text-xs font-mono flex items-center gap-x-2">
-                        <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                        <span class="text-blue-400">Gemini Ready</span>
-                    </div>
-                    <button onclick="resetApp()" class="flex items-center gap-x-2 px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 rounded-3xl text-sm transition-all">
-                        <i class="fa-solid fa-rotate"></i><span>Reset</span>
-                    </button>
-                </div>
+                <button type="button" onclick="window.location.reload()" class="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 rounded-3xl text-sm border border-zinc-800 transition-colors">
+                    <i class="fa-solid fa-rotate mr-2"></i>Reset (पुन्हा सुरू करा)
+                </button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 p-8">
-            <div class="lg:col-span-5 space-y-8">
-                <div class="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800">
+            <div class="lg:col-span-5 space-y-6">
+                <div class="bg-zinc-900 rounded-3xl border border-zinc-800 flex flex-col shadow-xl">
                     <div class="px-8 pt-8 pb-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="text-lg font-semibold flex items-center gap-x-3">
-                                <i class="fa-solid fa-utensils text-yellow-400"></i>
-                                <span>Food Photo / Label</span>
-                            </div>
-                            <div onclick="startCamera()" class="cursor-pointer flex items-center gap-x-2 text-xs bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-2xl">
-                                <i class="fa-solid fa-camera"></i><span>Camera</span>
-                            </div>
-                        </div>
-
-                        <div id="camera-container" class="hidden bg-black rounded-3xl overflow-hidden mb-6 relative">
-                            <video id="video" class="w-full aspect-video object-cover" autoplay playsinline></video>
-                            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-x-4">
-                                <button onclick="stopCamera()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-2xl text-sm font-medium flex items-center gap-x-2">
-                                    <i class="fa-solid fa-xmark"></i> CANCEL
-                                </button>
-                                <button onclick="capturePhoto()" class="bg-white text-zinc-950 px-8 py-2 rounded-2xl text-sm font-semibold flex items-center gap-x-2">
-                                    <i class="fa-solid fa-circle"></i> CAPTURE
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="upload-zone" class="upload-zone border-2 border-dashed border-zinc-700 hover:border-yellow-400 rounded-3xl h-72 flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden" onclick="document.getElementById('file-input').click()">
+                        <div id="upload-zone" class="border-2 border-dashed border-zinc-700 hover:border-yellow-400 rounded-3xl h-60 flex flex-col items-center justify-center relative overflow-hidden transition-colors">
                             <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
-                            <div id="upload-content" class="text-center">
-                                <i class="fa-solid fa-cloud-arrow-up text-5xl text-zinc-500 mb-4"></i>
-                                <p class="font-medium text-zinc-400">Drag photo here or click to upload</p>
-                                <p class="text-xs text-zinc-500 mt-2">JPG, PNG • Food or ingredients label</p>
+                            <div id="upload-content" class="text-center space-y-4">
+                                <i class="fa-solid fa-camera-retro text-4xl text-zinc-600"></i>
+                                <div class="flex flex-col gap-2">
+                                    <button type="button" onclick="openCamera()" class="px-6 py-2 bg-yellow-500 text-zinc-950 rounded-full font-bold text-xs hover:bg-yellow-400 uppercase transition-transform active:scale-95">Open Camera (कॅमेरा उघडा)</button>
+                                    <button type="button" onclick="document.getElementById('file-input').click()" class="text-xs text-zinc-500 hover:text-zinc-300 underline">or upload photo</button>
+                                </div>
                             </div>
                             <div id="preview-container" class="hidden absolute inset-0 bg-zinc-900 flex items-center justify-center">
-                                <img id="preview-image" class="max-h-full max-w-full object-contain rounded-3xl shadow-2xl" alt="Food preview">
-                                <button onclick="removePreview(event)" class="absolute top-4 right-4 bg-black/70 hover:bg-black text-white w-8 h-8 rounded-2xl flex items-center justify-center">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
+                                <img id="preview-image" class="max-h-full max-w-full object-contain">
+                                <button type="button" onclick="removePreview()" class="absolute top-4 right-4 bg-black/70 hover:bg-red-500 text-white w-8 h-8 rounded-full transition-colors">×</button>
                             </div>
                         </div>
                     </div>
-
                     <div class="bg-zinc-950 px-8 py-7 border-t border-zinc-800">
-                        <label class="block text-xs font-medium tracking-widest text-zinc-400 mb-2">EXTRA CONTEXT / INGREDIENTS</label>
-                        <textarea id="ingredients-input" rows="3" class="w-full bg-zinc-900 border border-zinc-700 focus:border-yellow-400 rounded-3xl px-6 py-5 text-sm resize-none focus:outline-none font-mono leading-relaxed" placeholder="Optional: Type ingredients or describe the food..."></textarea>
+                        <label class="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Details (तपशील)</label>
+                        <textarea id="ingredients-input" rows="3" class="w-full bg-zinc-900 border border-zinc-800 focus:border-yellow-400 rounded-2xl px-5 py-4 text-sm focus:outline-none mb-4 transition-colors" placeholder="e.g. Banana / उदा. केळे..."></textarea>
                         
-                        <div class="flex gap-x-3 mt-6">
-                            <button onclick="analyzeFoodWithGemini()" id="analyze-btn" class="flex-1 bg-yellow-400 hover:bg-yellow-300 transition-all text-zinc-950 font-semibold py-4 rounded-3xl flex items-center justify-center gap-x-3 text-base shadow-inner">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                ANALYZE WITH GEMINI
-                            </button>
+                        <div class="flex items-start gap-3 mb-6 bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
+                            <input type="checkbox" id="disclaimer-check" class="mt-1 w-5 h-5 rounded bg-zinc-900 text-yellow-500 border-zinc-700 cursor-pointer">
+                            <label for="disclaimer-check" class="text-[10px] text-zinc-500 leading-tight cursor-pointer">I acknowledge this is not medical advice. (मी मान्य करतो की हा वैद्यकीय सल्ला नाही.)</label>
                         </div>
+
+                        <button type="button" onclick="analyzeFood()" id="analyze-btn" class="w-full bg-yellow-400 hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-950 font-bold py-4 rounded-2xl flex items-center justify-center gap-x-3 text-sm shadow-lg transition-all active:scale-[0.98]">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> ANALYZE (तपासणी करा)
+                        </button>
                     </div>
                 </div>
 
-                <div class="bg-zinc-900 rounded-3xl p-6 border border-zinc-800">
-                    <p class="text-xs uppercase tracking-widest text-zinc-400 mb-4">Quick demos</p>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="loadDemo('Banana', 'https://picsum.photos/id/29/600/400')" class="demo-btn bg-zinc-800 hover:bg-zinc-700 transition-colors rounded-2xl p-3 text-center text-xs">🍌 Banana</button>
-                        <button onclick="loadDemo('Canned Tomato Soup. Ingredients: Tomatoes, salt, sodium phosphate.', 'https://picsum.photos/id/201/600/400')" class="demo-btn bg-zinc-800 hover:bg-zinc-700 transition-colors rounded-2xl p-3 text-center text-xs">🥫 Soup</button>
-                        <button onclick="loadDemo('Starfruit', 'https://picsum.photos/id/431/600/400')" class="demo-btn bg-zinc-800 hover:bg-zinc-700 transition-colors rounded-2xl p-3 text-center text-xs">⭐ Starfruit</button>
+                <div class="bg-zinc-900 rounded-3xl border border-zinc-800 flex flex-col shadow-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-zinc-800 bg-zinc-950 flex justify-between items-center">
+                        <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest"><i class="fa-solid fa-clock-rotate-left mr-2"></i>Recent Scans (इतिहास)</h3>
+                        <button onclick="clearHistory()" class="text-xs text-zinc-600 hover:text-red-400 transition-colors" title="Clear History">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
+                    <div id="history-list" class="max-h-64 overflow-y-auto p-2 space-y-1">
+                        </div>
                 </div>
             </div>
 
             <div class="lg:col-span-7">
-                <div id="empty-state" class="h-full bg-zinc-900 rounded-3xl border border-zinc-800 flex flex-col items-center justify-center text-center p-12">
-                    <div class="w-20 h-20 bg-yellow-500/10 rounded-3xl flex items-center justify-center mb-8">
-                        <i class="fa-solid fa-robot text-yellow-400 text-4xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-semibold mb-3">Ready to check your food?</h3>
-                    <p class="max-w-xs text-zinc-400 text-base">Paste your API key, upload a photo, and let Gemini analyze the risks for a renal diet.</p>
+                <div id="empty-state" class="h-full bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-800 flex flex-col items-center justify-center text-center p-12">
+                    <i class="fa-solid fa-clipboard-check text-zinc-700 text-4xl mb-6"></i>
+                    <h3 class="text-2xl font-semibold mb-3 text-zinc-300">Awaiting Input</h3>
+                    <p class="text-zinc-500">Capture a photo or select from history to view.</p>
                 </div>
 
-                <div id="results-panel" class="hidden result-card bg-zinc-900 rounded-3xl border border-zinc-800 overflow-hidden">
-                    <div id="status-header" class="h-2"></div>
+                <div id="results-panel" class="bg-zinc-900 rounded-3xl border border-zinc-800 overflow-hidden hidden shadow-2xl">
+                    <div id="status-header" class="h-3 w-full"></div>
                     <div class="p-8">
-                        <div class="flex justify-between items-start">
+                        <div class="flex flex-col sm:flex-row justify-between items-start gap-6">
                             <div>
-                                <span class="text-xs tracking-widest font-medium text-zinc-500">IDENTIFIED BY AI AS</span>
-                                <h2 id="food-name" class="text-4xl font-semibold text-white mt-1">...</h2>
+                                <span class="text-[10px] tracking-widest font-bold text-zinc-500 uppercase">Identified as</span>
+                                <h2 id="food-name" class="text-3xl font-bold text-white mt-1">---</h2>
                             </div>
-                            <div id="status-pill" class="px-7 py-2 rounded-3xl text-sm font-bold flex items-center gap-x-2 shadow-inner"></div>
+                            <div id="status-pill" class="px-8 py-3 rounded-3xl text-lg font-black border-2 text-center shrink-0"></div>
                         </div>
-
-                        <div class="mt-10 grid grid-cols-3 gap-6">
-                            <div id="k-card" class="bg-zinc-950 rounded-3xl p-6 border border-zinc-700">
-                                <div class="flex justify-between">
-                                    <div><span class="text-2xl">🥬</span><p class="text-xs text-zinc-400 mt-4">POTASSIUM</p></div>
-                                    <div id="k-level" class="text-right"></div>
+                        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-zinc-950 rounded-3xl p-6 border border-zinc-800 text-center relative overflow-hidden">
+                                <p class="text-[10px] font-bold text-zinc-500 uppercase mb-1">Potassium</p>
+                                <div id="k-level" class="text-2xl font-black mb-3 relative z-10">---</div>
+                                <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden relative z-10">
+                                    <div id="k-bar" class="progress-bar-fill h-full bg-zinc-800" style="width: 0%"></div>
                                 </div>
                             </div>
-                            <div id="p-card" class="bg-zinc-950 rounded-3xl p-6 border border-zinc-700">
-                                <div class="flex justify-between">
-                                    <div><span class="text-2xl">🦴</span><p class="text-xs text-zinc-400 mt-4">PHOSPHORUS</p></div>
-                                    <div id="p-level" class="text-right"></div>
+                            <div class="bg-zinc-950 rounded-3xl p-6 border border-zinc-800 text-center relative overflow-hidden">
+                                <p class="text-[10px] font-bold text-zinc-500 uppercase mb-1">Phosphorus</p>
+                                <div id="p-level" class="text-2xl font-black mb-3 relative z-10">---</div>
+                                <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden relative z-10">
+                                    <div id="p-bar" class="progress-bar-fill h-full bg-zinc-800" style="width: 0%"></div>
                                 </div>
                             </div>
-                            <div id="na-card" class="bg-zinc-950 rounded-3xl p-6 border border-zinc-700">
-                                <div class="flex justify-between">
-                                    <div><span class="text-2xl">🧂</span><p class="text-xs text-zinc-400 mt-4">SODIUM</p></div>
-                                    <div id="na-level" class="text-right"></div>
+                            <div class="bg-zinc-950 rounded-3xl p-6 border border-zinc-800 text-center relative overflow-hidden">
+                                <p class="text-[10px] font-bold text-zinc-500 uppercase mb-1">Sodium</p>
+                                <div id="na-level" class="text-2xl font-black mb-3 relative z-10">---</div>
+                                <div class="w-full bg-zinc-900 h-2 rounded-full overflow-hidden relative z-10">
+                                    <div id="na-bar" class="progress-bar-fill h-full bg-zinc-800" style="width: 0%"></div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mt-10">
-                            <details id="reasoning-accordion" class="group bg-zinc-950 border border-zinc-700 rounded-3xl" open>
-                                <summary class="px-8 py-6 flex items-center justify-between cursor-pointer text-base font-medium">
-                                    <span class="flex items-center gap-x-3"><i class="fa-solid fa-brain text-yellow-400"></i> AI Reasoning</span>
-                                    <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform"></i>
-                                </summary>
-                                <div id="reasoning-content" class="px-8 pb-8 text-sm text-zinc-400 border-t border-zinc-700 pt-6">
-                                    </div>
-                            </details>
-                        </div>
-                    </div>
-
-                    <div class="bg-zinc-950 border-t border-zinc-800 px-8 py-6 flex items-center justify-between">
-                        <button onclick="resetApp()" class="text-zinc-400 hover:text-white flex items-center gap-x-2 text-sm">
-                            <i class="fa-solid fa-arrow-rotate-left"></i><span>New Scan</span>
-                        </button>
+                        <div id="reasoning-content" class="mt-10 space-y-4"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        let currentImageDataURL = null;
+    <div id="camera-modal" class="fixed inset-0 z-[200] bg-black/95 items-center justify-center p-4">
+        <div class="relative w-full max-w-2xl bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
+            <video id="video-feed" autoplay playsinline class="w-full h-[500px] object-cover bg-black"></video>
+            <canvas id="capture-canvas" class="hidden"></canvas>
+            <div class="absolute bottom-8 left-0 w-full flex flex-col items-center gap-4">
+                <button onclick="takePhoto()" class="w-20 h-20 bg-white border-8 border-zinc-500/50 rounded-full transition-transform hover:scale-105 active:scale-95"></button>
+                <button onclick="closeCamera()" class="px-8 py-2 bg-zinc-800 text-white rounded-full text-xs font-bold uppercase hover:bg-zinc-700 transition-colors">Cancel</button>
+            </div>
+        </div>
+    </div>
 
-        // --- File & UI Handling ---
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                currentImageDataURL = ev.target.result;
-                document.getElementById('upload-content').classList.add('hidden');
-                document.getElementById('preview-container').classList.remove('hidden');
-                document.getElementById('preview-image').src = currentImageDataURL;
-            }
-            reader.readAsDataURL(file);
-        }
+    <footer class="fixed bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-md border-t border-zinc-800 py-3 px-6 z-[100]">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-3 text-[11px] text-zinc-400 justify-center sm:justify-start text-center sm:text-left">
+            <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm hidden sm:block shrink-0"></i>
+            <p class="leading-tight">
+                <span class="text-zinc-200 font-bold uppercase mr-1">Medical Disclaimer:</span> AI estimates only. Always consult your doctor or dietitian. 
+                <span class="block sm:inline sm:ml-2 italic text-zinc-500">(वैद्यकीय सूचना: हे फक्त एआय अंदाज आहेत. नेहमी तुमच्या डॉक्टरांचा किंवा आहारतज्ज्ञांचा सल्ला घ्या.)</span>
+            </p>
+        </div>
+    </footer>
 
-        function removePreview(e) {
-            e.stopImmediatePropagation();
-            document.getElementById('preview-container').classList.add('hidden');
-            document.getElementById('upload-content').classList.remove('hidden');
-            currentImageDataURL = null;
-        }
+<script>
+    let currentImageDataURL = null;
+    let videoStream = null;
+    let scanHistory = JSON.parse(localStorage.getItem('dialysisHistory') || "[]");
+    const apiKey = "AIzaSyALVK693iritRtq8-H6xEN_ng5NOBH7lsc";
 
-        // --- Camera Handling ---
-        let videoStream = null;
-        async function startCamera() {
-            const container = document.getElementById('camera-container');
-            container.classList.remove('hidden');
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                document.getElementById('video').srcObject = videoStream;
-            } catch (err) {
-                alert("Camera access denied. Note: Browsers require HTTPS or Localhost to use the camera.");
-                container.classList.add('hidden');
-            }
-        }
+    // Initialize history on load
+    window.onload = () => { renderHistoryUI(); };
 
-        function stopCamera() {
-            if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-            document.getElementById('camera-container').classList.add('hidden');
-        }
-
-        function capturePhoto() {
-            const video = document.getElementById('video');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            
-            currentImageDataURL = canvas.toDataURL('image/jpeg', 0.92);
+    // --- Media Logic ---
+    async function openCamera() {
+        try {
+            videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            document.getElementById('video-feed').srcObject = videoStream;
+            document.getElementById('camera-modal').classList.add('active');
+        } catch (err) { alert("Camera error: " + err); }
+    }
+    function closeCamera() {
+        if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+        document.getElementById('camera-modal').classList.remove('active');
+    }
+    function takePhoto() {
+        const video = document.getElementById('video-feed');
+        const canvas = document.getElementById('capture-canvas');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        currentImageDataURL = canvas.toDataURL('image/jpeg');
+        document.getElementById('upload-content').classList.add('hidden');
+        document.getElementById('preview-container').classList.remove('hidden');
+        document.getElementById('preview-image').src = currentImageDataURL;
+        closeCamera();
+    }
+    function handleFileSelect(e) {
+        const reader = new FileReader();
+        reader.onload = f => {
+            currentImageDataURL = f.target.result;
             document.getElementById('upload-content').classList.add('hidden');
             document.getElementById('preview-container').classList.remove('hidden');
             document.getElementById('preview-image').src = currentImageDataURL;
-            stopCamera();
+        };
+        if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+    }
+    function removePreview() {
+        currentImageDataURL = null;
+        document.getElementById('preview-container').classList.add('hidden');
+        document.getElementById('upload-content').classList.remove('hidden');
+        document.getElementById('file-input').value = "";
+    }
+
+    // --- History Logic ---
+    function renderHistoryUI() {
+        const list = document.getElementById('history-list');
+        if (scanHistory.length === 0) {
+            list.innerHTML = `<div class="text-center text-zinc-600 text-xs py-8 italic">No recent scans. (कोणताही इतिहास नाही.)</div>`;
+            return;
         }
 
-        async function loadDemo(text, imgUrl) {
-            document.getElementById('ingredients-input').value = text;
+        list.innerHTML = scanHistory.map((item, index) => {
+            const riskColor = item.data.overallRisk === "red" ? "bg-red-500" : 
+                              (item.data.overallRisk === "yellow" ? "bg-amber-500" : "bg-emerald-500");
             
-            // Convert demo image URL to base64 so Gemini can read it via API
-            try {
-                const response = await fetch(imgUrl);
-                const blob = await response.blob();
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    currentImageDataURL = reader.result;
-                    document.getElementById('upload-content').classList.add('hidden');
-                    document.getElementById('preview-container').classList.remove('hidden');
-                    document.getElementById('preview-image').src = currentImageDataURL;
-                };
-                reader.readAsDataURL(blob);
-            } catch (e) {
-                console.error("Error loading demo image", e);
+            const dateObj = new Date(item.timestamp);
+            const timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const dateStr = dateObj.toLocaleDateString();
+
+            const safeData = JSON.stringify(item.data).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+            return `
+            <div class="flex items-center gap-4 p-3 hover:bg-zinc-800/80 cursor-pointer rounded-2xl border border-transparent hover:border-zinc-700 transition-all group" onclick="loadFromHistory('${safeData}')">
+                <div class="w-3 h-3 rounded-full ${riskColor} shadow-sm shrink-0"></div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-zinc-200 truncate group-hover:text-yellow-400 transition-colors">${item.data.foodNameEN}</p>
+                    <p class="text-[10px] text-zinc-500 truncate">${item.data.foodNameMR}</p>
+                </div>
+                <div class="text-[10px] text-zinc-600 text-right">
+                    <div class="font-medium">${timeStr}</div>
+                    <div class="opacity-70">${dateStr}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function saveToHistory(data) {
+        scanHistory.unshift({ timestamp: Date.now(), data: data });
+        if (scanHistory.length > 20) scanHistory.pop();
+        localStorage.setItem('dialysisHistory', JSON.stringify(scanHistory));
+        renderHistoryUI();
+    }
+
+    function clearHistory() {
+        if(confirm("Clear all scan history? (सर्व इतिहास हटवायचा?)")) {
+            scanHistory = [];
+            localStorage.setItem('dialysisHistory', "[]");
+            renderHistoryUI();
+        }
+    }
+
+    function loadFromHistory(jsonString) {
+        const data = JSON.parse(jsonString.replace(/&quot;/g, '"'));
+        renderResults(data);
+        
+        if(window.innerWidth < 1024) {
+            document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // --- Analysis Logic ---
+    async function analyzeFood() {
+        const btn = document.getElementById('analyze-btn');
+        const inputVal = document.getElementById('ingredients-input').value;
+
+        if (!document.getElementById('disclaimer-check').checked) { 
+            alert("Please check the disclaimer."); 
+            return; 
+        }
+        if (!currentImageDataURL && !inputVal.trim()) { 
+            alert("Please provide an image or text input."); 
+            return; 
+        }
+        
+        btn.disabled = true; 
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...`;
+
+        try {
+            const prompt = `Analyze this food for Dialysis safety (Renal Diet). 
+            SCORING RULE: 100 = Extremely High Mineral content (Dangerous). 0 = None (Safe).
+            OVERALL RISK: "red" if any score > 70, "yellow" if 40-70, "green" if < 40.
+            Respond ONLY in RAW JSON format:
+            {
+              "foodNameEN": "Banana", "foodNameMR": "केळ",
+              "overallRisk": "red",
+              "risks": [
+                {"mineral": "Potassium", "score": 90, "emoji": "🥬", "reasonEN": "Very high in potassium, avoid.", "reasonMR": "पोटॅशियमचे प्रमाण जास्त आहे, टाळा."},
+                {"mineral": "Phosphorus", "score": 30, "emoji": "🦴", "reasonEN": "Moderate phosphorus.", "reasonMR": "मध्यम फॉस्फरस."},
+                {"mineral": "Sodium", "score": 5, "emoji": "🧂", "reasonEN": "Low sodium.", "reasonMR": "कमी सोडियम."}
+              ]
+            }`;
+
+            let parts = [{ text: prompt + " Input: " + inputVal }];
+            if (currentImageDataURL) {
+                const base64Data = currentImageDataURL.includes(',') ? currentImageDataURL.split(',')[1] : currentImageDataURL;
+                parts.push({ inline_data: { mime_type: "image/jpeg", data: base64Data } });
             }
+
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseMimeType: "application/json" } })
+            });
+
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message);
+
+            const result = JSON.parse(data.candidates[0].content.parts[0].text);
+            
+            renderResults(result);
+            saveToHistory(result);
+
+        } catch (err) { 
+            console.error(err);
+            alert("Error: " + err.message); 
+        } finally { 
+            btn.disabled = false; 
+            btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ANALYZE (तपासणी करा)`; 
+        }
+    }
+
+    function renderResults(data) {
+        document.getElementById('empty-state').classList.add('hidden');
+        document.getElementById('results-panel').classList.remove('hidden');
+        document.getElementById('food-name').innerHTML = `${data.foodNameEN} <span class="text-zinc-500 text-xl">/ ${data.foodNameMR}</span>`;
+
+        const pill = document.getElementById('status-pill');
+        const header = document.getElementById('status-header');
+        pill.className = "px-8 py-3 rounded-3xl text-lg font-black border-2";
+
+        if (data.overallRisk === "red") {
+            pill.innerHTML = "STOP / थांबा"; pill.classList.add("bg-red-500/10", "text-red-500", "border-red-500/50");
+            header.className = "h-3 bg-red-600";
+        } else if (data.overallRisk === "yellow") {
+            pill.innerHTML = "CAUTION / सावधान"; pill.classList.add("bg-amber-500/10", "text-amber-500", "border-amber-500/50");
+            header.className = "h-3 bg-amber-500";
+        } else {
+            pill.innerHTML = "SAFE / सुरक्षित"; pill.classList.add("bg-emerald-500/10", "text-emerald-500", "border-emerald-500/50");
+            header.className = "h-3 bg-emerald-500";
         }
 
-        // --- Data formatting for Gemini ---
-        function getBase64Data(dataUrl) { return dataUrl.split(',')[1]; }
-        function getMimeType(dataUrl) { return dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';')); }
-
-        // --- Core API Integration ---
-        async function analyzeFoodWithGemini() {
-            const apiKey = document.getElementById('api-key').value.trim();
-            if (!apiKey) {
-                alert("Please enter your Gemini API Key at the top right.");
-                return;
-            }
-
-            const textInput = document.getElementById('ingredients-input').value.trim();
-            if (!textInput && !currentImageDataURL) {
-                alert("Please upload an image or enter some text description first!");
-                return;
-            }
-
-            const btn = document.getElementById('analyze-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> AI IS ANALYZING...`;
-            btn.disabled = true;
-
-            try {
-                // System Prompt designed for structured JSON output
-                const promptText = `
-                You are a specialized renal dietitian assistant. Analyze the provided food image and/or ingredient text to determine if it is safe for a patient with renal failure (on dialysis).
-
-                Evaluate the risks strictly for:
-                1. Potassium
-                2. Phosphorus (Watch for hidden phosphate additives)
-                3. Sodium
-
-                CRITICAL DANGER: If the food is or contains Starfruit (Carambola), mark overall risk as "red" and note the neurotoxicity danger.
-
-                Respond ONLY with a valid JSON object matching exactly this structure:
-                {
-                  "foodName": "Identify the food here",
-                  "overallRisk": "red" | "yellow" | "green",
-                  "risks": [
-                    { "mineral": "Potassium", "level": "HIGH" | "MODERATE" | "LOW", "emoji": "🥬", "reason": "Explanation..." },
-                    { "mineral": "Phosphorus", "level": "HIGH" | "MODERATE" | "LOW", "emoji": "🦴", "reason": "Explanation..." },
-                    { "mineral": "Sodium", "level": "HIGH" | "MODERATE" | "LOW", "emoji": "🧂", "reason": "Explanation..." }
-                  ]
-                }
-                
-                Make sure "overallRisk" is "red" if any mineral is HIGH or if a forbidden food is found.
-                User Context/Text provided: ${textInput || "None"}
-                `;
-
-                let parts = [{ "text": promptText }];
-
-                // Attach image if present
-                if (currentImageDataURL) {
-                    parts.push({
-                        "inline_data": {
-                            "mime_type": getMimeType(currentImageDataURL),
-                            "data": getBase64Data(currentImageDataURL)
-                        }
-                    });
-                }
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ "role": "user", "parts": parts }],
-                        generationConfig: { response_mime_type: "application/json" } // Force JSON return
-                    })
-                });
-
-                const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-
-                const aiResult = JSON.parse(data.candidates[0].content.parts[0].text);
-                renderResults(aiResult);
-
-            } catch (err) {
-                console.error(err);
-                alert("API Error: " + err.message);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        // --- Render UI ---
-        function renderResults(data) {
-            document.getElementById('empty-state').classList.add('hidden');
-            const resultsPanel = document.getElementById('results-panel');
-            resultsPanel.classList.remove('hidden');
+        let html = "";
+        data.risks.forEach(r => {
+            const prefix = { "Potassium": "k", "Phosphorus": "p", "Sodium": "na" }[r.mineral];
             
-            document.getElementById('food-name').textContent = data.foodName;
+            const color = r.score > 70 ? "text-red-500" : (r.score > 40 ? "text-amber-500" : "text-emerald-500");
+            const bg = r.score > 70 ? "bg-red-500" : (r.score > 40 ? "bg-amber-500" : "bg-emerald-500");
             
-            // Status pill & Header
-            const statusPill = document.getElementById('status-pill');
-            if (data.overallRisk === "red") {
-                statusPill.innerHTML = `<span class="text-red-400">❌ STOP</span>`;
-                document.getElementById('status-header').className = "h-2 bg-gradient-to-r from-red-500 to-rose-600";
-            } else if (data.overallRisk === "yellow") {
-                statusPill.innerHTML = `<span class="text-amber-400">⚠️ CAUTION</span>`;
-                document.getElementById('status-header').className = "h-2 bg-gradient-to-r from-amber-400 to-yellow-500";
-            } else {
-                statusPill.innerHTML = `<span class="text-emerald-400">✅ GO</span>`;
-                document.getElementById('status-header').className = "h-2 bg-gradient-to-r from-emerald-400 to-cyan-400";
-            }
-            
-            // Process Risks
-            let reasoningHTML = `<div class="space-y-6">`;
-            
-            data.risks.forEach(r => {
-                // Find matching card
-                let cardId, levelId;
-                if (r.mineral.includes("Potassium")) { cardId = 'k-card'; levelId = 'k-level'; }
-                else if (r.mineral.includes("Phosphorus")) { cardId = 'p-card'; levelId = 'p-level'; }
-                else if (r.mineral.includes("Sodium")) { cardId = 'na-card'; levelId = 'na-level'; }
+            document.getElementById(`${prefix}-level`).innerHTML = `<span class="${color}">${r.score}</span><span class="text-zinc-600 text-sm font-normal">/100</span>`;
+            const bar = document.getElementById(`${prefix}-bar`);
+            bar.style.width = r.score + "%";
+            bar.className = `progress-bar-fill h-full ${bg}`;
 
-                if (cardId) {
-                    const card = document.getElementById(cardId);
-                    const levelSpan = document.getElementById(levelId);
-                    
-                    // Reset card styling
-                    card.className = "bg-zinc-950 rounded-3xl p-6 border border-zinc-700";
-                    let textColor = "text-emerald-400";
-                    
-                    if (r.level === "HIGH") {
-                        textColor = "text-red-400";
-                        card.classList.add("border-red-400/50");
-                    } else if (r.level === "MODERATE") {
-                        textColor = "text-amber-400";
-                    }
-                    
-                    levelSpan.innerHTML = `<span class="text-2xl font-bold ${textColor}">${r.level}</span>`;
-                }
-
-                // Add to reasoning
-                reasoningHTML += `
-                    <div class="flex gap-4">
-                        <div class="text-3xl flex-shrink-0">${r.emoji}</div>
-                        <div>
-                            <div class="flex items-center gap-x-3">
-                                <span class="font-semibold text-white">${r.mineral}</span>
-                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 tracking-wider">${r.level}</span>
-                            </div>
-                            <p class="text-zinc-300 mt-2 leading-relaxed">${r.reason}</p>
-                        </div>
+            html += `
+                <div class="flex gap-4 p-5 rounded-2xl bg-zinc-950/50 border border-zinc-800">
+                    <div class="text-4xl">${r.emoji}</div>
+                    <div>
+                        <p class="font-bold text-white">${r.mineral}</p>
+                        <p class="text-zinc-300 text-sm mt-1 leading-relaxed">${r.reasonEN}</p>
+                        <p class="text-zinc-500 text-xs italic mt-1 leading-relaxed">${r.reasonMR}</p>
                     </div>
-                `;
-            });
-            
-            reasoningHTML += `</div>`;
-            document.getElementById('reasoning-content').innerHTML = reasoningHTML;
-        }
-
-        function resetApp() { location.reload(); }
-
-        // --- Drag and Drop Setup ---
-        window.onload = function() {
-            const zone = document.getElementById('upload-zone');
-            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
-            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-            zone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                zone.classList.remove('dragover');
-                const file = e.dataTransfer.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = ev => {
-                        currentImageDataURL = ev.target.result;
-                        document.getElementById('upload-content').classList.add('hidden');
-                        document.getElementById('preview-container').classList.remove('hidden');
-                        document.getElementById('preview-image').src = currentImageDataURL;
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    </script>
+                </div>`;
+        });
+        document.getElementById('reasoning-content').innerHTML = html;
+    }
+</script>
 </body>
 </html>
