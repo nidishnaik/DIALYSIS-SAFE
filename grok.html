@@ -155,7 +155,6 @@
     let currentImageDataURL = null;
     let videoStream = null;
     let scanHistory = JSON.parse(localStorage.getItem('dialysisHistory') || "[]");
-    const apiKey = "AIzaSyALVK693iritRtq8-H6xEN_ng5NOBH7lsc";
 
     // Initialize history on load
     window.onload = () => { renderHistoryUI(); };
@@ -295,14 +294,15 @@
                 parts.push({ inline_data: { mime_type: "image/jpeg", data: base64Data } });
             }
 
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            // The Google/Gemini API key is kept on the server.
+            const res = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseMimeType: "application/json" } })
+                body: JSON.stringify({ parts })
             });
 
             const data = await res.json();
-            if (data.error) throw new Error(data.error.message);
+            if (!res.ok || data.error) throw new Error(data.error || 'Analysis failed');
 
             const result = JSON.parse(data.candidates[0].content.parts[0].text);
             
