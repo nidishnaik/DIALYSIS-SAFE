@@ -1,0 +1,14 @@
+{
+  "name": "dialysis-safe",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "13.3.2",
+    "express": "5.1.0"
+  }
+}
