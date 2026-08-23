@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
@@ -5,48 +6,202 @@ import { generateRegistrationOptions, verifyRegistrationResponse, generateAuthen
 
 const app = express();
 app.use(express.json({ limit: '12mb' }));
+
 const PORT = Number(process.env.PORT || 3000);
 const RP_ID = process.env.RP_ID || 'localhost';
 const ORIGIN = process.env.ORIGIN || `http://localhost:${PORT}`;
 const RP_NAME = process.env.RP_NAME || 'DialysisSafe';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+const AUTH_USERNAME = String(process.env.AUTH_USERNAME || '').trim();
+const AUTH_PASSWORD_HASH = String(process.env.AUTH_PASSWORD_HASH || '').trim();
 const COOKIE_NAME = 'dialysis_safe_session';
+
 const credentials = new Map();
 const challenges = new Map();
 const sessions = new Map();
 const apiKeys = new Map();
-function base64url(buffer){return Buffer.from(buffer).toString('base64url');}
-function randomToken(){return base64url(crypto.randomBytes(32));}
-function hashKey(key){return crypto.createHash('sha256').update(key).digest('hex');}
-function readCookie(req,name){const row=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith(`${name}=`));return row?decodeURIComponent(row.slice(name.length+1)):null;}
-function sessionUsername(req){const token=readCookie(req,COOKIE_NAME);return token?sessions.get(token)||null:null;}
-function isAuthenticated(req){return Boolean(sessionUsername(req));}
-function setSession(res,username){const token=randomToken();sessions.set(token,username);const secure=ORIGIN.startsWith('https://')?' Secure;':'';res.setHeader('Set-Cookie',`${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly;${secure} SameSite=Lax; Path=/; Max-Age=28800`);}
-function requireSession(req,res,next){if(!isAuthenticated(req))return res.status(401).json({error:'Passkey authentication required'});next();}
-function createApiKey(username){const apiKey=`ds_${base64url(crypto.randomBytes(64))}`;apiKeys.set(hashKey(apiKey),{username,createdAt:new Date().toISOString()});return apiKey;}
 
-app.get('/',(req,res)=>res.redirect('/grok.html'));
-app.get('/index.html',async(req,res,next)=>{if(!isAuthenticated(req))return res.redirect('/grok.html');try{let html=await fs.readFile('index.html','utf8');const featureScript=`<script>
-(function(){
-const chip=document.createElement('div');chip.className='fixed top-[78px] right-4 z-[60] bg-zinc-900 border border-zinc-800 rounded-full px-4 py-2 text-xs text-zinc-300 shadow-lg';chip.innerHTML='<i class="fa-solid fa-user mr-2 text-yellow-400"></i>DialysisSafe User';document.body.appendChild(chip);
-const searchInput=document.getElementById('search-input');const searchArea=searchInput?.closest('.px-6.pt-6');
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
-if(searchArea){const box=document.createElement('div');box.className='mt-3 bg-zinc-900 border border-zinc-800 rounded-2xl p-4';box.innerHTML='<div class="flex flex-wrap items-center gap-3"><span class="text-sm font-semibold text-zinc-200"><i class="fa-solid fa-camera text-yellow-400 mr-2"></i>Photo food analysis</span><label class="cursor-pointer bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2 rounded-xl text-sm"><i class="fa-solid fa-upload mr-2"></i>Upload Photo<input id="ds-photo-input" type="file" accept="image/*" capture="environment" class="hidden"></label><button id="ds-take-photo" type="button" class="bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-bold px-4 py-2 rounded-xl text-sm"><i class="fa-solid fa-camera mr-2"></i>Take Photo</button></div><div id="ds-photo-preview" class="hidden mt-4"></div><div id="ds-photo-result" class="hidden mt-4"></div>';searchArea.appendChild(box);
-const input=document.getElementById('ds-photo-input'),take=document.getElementById('ds-take-photo'),preview=document.getElementById('ds-photo-preview'),result=document.getElementById('ds-photo-result');
-async function analyze(file){if(!file)return;result.classList.remove('hidden');result.innerHTML='<p class="text-sm text-yellow-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Analyzing photo...</p>';preview.classList.remove('hidden');preview.innerHTML='<img src="'+URL.createObjectURL(file)+'" alt="Selected food" class="max-h-64 w-full object-contain rounded-2xl border border-zinc-800 bg-zinc-950">';try{const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});const comma=data.indexOf(',');const mime=data.slice(5,data.indexOf(';'));const prompt='Analyze this food photo for DialysisSafe. Identify the most likely food and give a simple kidney-diet warning. Return JSON only with keys foodName, marathiName, potassium, phosphorus, sodium, risk, advice. Use only low, medium, or high for mineral fields. Do not diagnose. Tell the user to confirm with a doctor or renal dietitian.';const response=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({parts:[{text:prompt},{inline_data:{mime_type:mime,data:data.slice(comma+1)}}]})});const body=await response.json();if(!response.ok)throw new Error(body.error||'Photo analysis failed');const raw=body?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'';let x;try{x=JSON.parse(raw.replace(/^```json\s*/,'').replace(/\s*```$/,''));}catch{x={foodName:'Food analysis',advice:raw};}result.innerHTML='<div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 space-y-2"><p class="font-bold text-white text-lg">'+esc(x.foodName||'Food')+'</p>'+(x.marathiName?'<p class="text-zinc-400">'+esc(x.marathiName)+'</p>':'')+'<div class="grid grid-cols-3 gap-2 text-xs"><span class="bg-zinc-900 rounded-xl p-3">Potassium<br><b>'+esc(x.potassium||'Unknown')+'</b></span><span class="bg-zinc-900 rounded-xl p-3">Phosphorus<br><b>'+esc(x.phosphorus||'Unknown')+'</b></span><span class="bg-zinc-900 rounded-xl p-3">Sodium<br><b>'+esc(x.sodium||'Unknown')+'</b></span></div><p class="text-sm text-zinc-300">'+esc(x.advice||'Please ask your doctor or renal dietitian before eating this food.')+'</p><p class="text-[11px] text-zinc-500">AI photo analysis is an estimate, not a medical diagnosis.</p></div>';}catch(e){result.innerHTML='<p class="text-sm text-red-400">'+esc(e.message||'Could not analyze the photo.')+'</p>';}}
-input.addEventListener('change',()=>analyze(input.files?.[0]));take.addEventListener('click',()=>input.click());}
-const oldSearch=window.doSearch;window.doSearch=function(){const q=document.getElementById('search-input')?.value.trim();if(!q){oldSearch();return;}const found=FOODS.some(f=>f[0].toLowerCase().includes(q.toLowerCase())||f[1].includes(q));oldSearch();if(!found)unknown(q);};
-function unknown(q){document.getElementById('ds-unknown-food')?.remove();const b=document.createElement('div');b.id='ds-unknown-food';b.className='mx-6 mb-5 bg-zinc-900 border border-yellow-500/30 rounded-2xl p-5';b.innerHTML='<p class="text-zinc-200 font-semibold">Food not found in our list. Ask AI to analyze it?</p><button id="ds-ask-ai" class="mt-3 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-bold px-4 py-2 rounded-xl text-sm">🤖 Ask AI</button><div id="ds-ai-answer" class="mt-3"></div>';document.querySelector('.grid.grid-cols-1.lg\\:grid-cols-12')?.before(b);document.getElementById('ds-ask-ai').onclick=async()=>{const a=document.getElementById('ds-ai-answer');a.innerHTML='<p class="text-sm text-yellow-400">Analyzing...</p>';try{const prompt='A user entered the food name "'+q.replace(/"/g,'')+'". For a dialysis/renal diet app, explain briefly whether it is generally low, medium, or high in potassium, phosphorus, and sodium, plus one practical caution. Do not invent exact numbers. Do not diagnose. Tell the user to confirm with their doctor or renal dietitian.';const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({parts:[{text:prompt}]})});const body=await r.json();if(!r.ok)throw new Error(body.error||'AI request failed');const text=body?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'No answer returned.';a.innerHTML='<div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm text-zinc-300 whitespace-pre-wrap">'+esc(text)+'</div>';}catch(e){a.innerHTML='<p class="text-sm text-red-400">'+esc(e.message||'Could not analyze this food.')+'</p>';}};}
-})();
-</script>`;html=html.replace('</body>',featureScript+'\n</body>');res.type('html').send(html);}catch(e){next(e);}});
-app.get('/api/auth/status',(req,res)=>res.json({configured:Boolean(RP_ID&&ORIGIN),enrolled:credentials.size>0,authenticated:isAuthenticated(req),username:sessionUsername(req)}));
-app.post('/api/auth/register/options',async(req,res)=>{const username=String(req.body?.username||'').trim().slice(0,80);if(!username)return res.status(400).json({error:'Username is required'});const userID=base64url(crypto.createHash('sha256').update(username).digest());const options=await generateRegistrationOptions({rpName:RP_NAME,rpID:RP_ID,userName:username,userID,attestationType:'none',excludeCredentials:[...credentials.values()].filter(c=>c.username===username).map(c=>({id:c.id})),authenticatorSelection:{residentKey:'required',userVerification:'required'}});challenges.set(`reg:${username}`,options.challenge);res.json(options);});
-app.post('/api/auth/register/verify',async(req,res)=>{const username=String(req.body?.username||'').trim().slice(0,80),expectedChallenge=challenges.get(`reg:${username}`);if(!expectedChallenge)return res.status(400).json({error:'Registration challenge expired'});try{const verification=await verifyRegistrationResponse({response:req.body.response,expectedChallenge,expectedOrigin:ORIGIN,expectedRPID:RP_ID,requireUserVerification:true});if(!verification.verified||!verification.registrationInfo)return res.status(400).json({error:'Passkey registration failed'});const info=verification.registrationInfo;credentials.set(info.credential.id,{id:info.credential.id,publicKey:info.credential.publicKey,counter:info.credential.counter,username});challenges.delete(`reg:${username}`);setSession(res,username);res.json({verified:true,username,apiKey:createApiKey(username)});}catch(error){res.status(400).json({error:error.message});}});
-app.post('/api/auth/login/options',async(_req,res)=>{const options=await generateAuthenticationOptions({rpID:RP_ID,userVerification:'required',allowCredentials:[...credentials.values()].map(c=>({id:c.id,type:'public-key'}))});challenges.set('login',options.challenge);res.json(options);});
-app.post('/api/auth/login/verify',async(req,res)=>{const expectedChallenge=challenges.get('login'),credential=credentials.get(req.body?.response?.id);if(!expectedChallenge)return res.status(400).json({error:'Login challenge expired'});if(!credential)return res.status(401).json({error:'Unknown passkey'});try{const verification=await verifyAuthenticationResponse({response:req.body.response,expectedChallenge,expectedOrigin:ORIGIN,expectedRPID:RP_ID,credential:{id:credential.id,publicKey:credential.publicKey,counter:credential.counter},requireUserVerification:true});if(!verification.verified)return res.status(401).json({error:'Passkey verification failed'});credential.counter=verification.authenticationInfo.newCounter;challenges.delete('login');setSession(res,credential.username);res.json({verified:true,username:credential.username,apiKey:createApiKey(credential.username)});}catch(error){res.status(401).json({error:error.message});}});
-app.post('/api/key/issue',requireSession,(req,res)=>res.status(201).json({apiKey:createApiKey(sessionUsername(req))}));
-app.post('/api/analyze',requireSession,async(req,res)=>{if(!GEMINI_API_KEY)return res.status(503).json({error:'Server AI key is not configured'});try{const parts=Array.isArray(req.body?.parts)?req.body.parts:[];if(!parts.length)return res.status(400).json({error:'No analysis content supplied'});const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts}],generationConfig:{responseMimeType:'application/json'}})});const data=await response.json();if(!response.ok||data.error)return res.status(response.status||502).json({error:data.error?.message||'AI request failed'});res.json(data);}catch(error){res.status(502).json({error:error.message});}});
-app.post('/api/auth/logout',(req,res)=>{const token=readCookie(req,COOKIE_NAME);if(token)sessions.delete(token);res.setHeader('Set-Cookie',`${COOKIE_NAME}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);res.json({ok:true});});
-app.get('/api/secure-config-check',requireSession,(_req,res)=>res.json({ok:true,message:'Authenticated server endpoint is working. Secrets remain server-side.'}));
-app.use(express.static('.',{index:false}));
-app.listen(PORT,()=>console.log(`DialysisSafe listening on ${ORIGIN}`));
+function base64url(buffer) { return Buffer.from(buffer).toString('base64url'); }
+function randomToken() { return base64url(crypto.randomBytes(32)); }
+function hashKey(key) { return crypto.createHash('sha256').update(key).digest('hex'); }
+function readCookie(req, name) {
+  const row = (req.headers.cookie || '').split(';').map(x => x.trim()).find(x => x.startsWith(`${name}=`));
+  return row ? decodeURIComponent(row.slice(name.length + 1)) : null;
+}
+function sessionUsername(req) {
+  const token = readCookie(req, COOKIE_NAME);
+  return token ? sessions.get(token) || null : null;
+}
+function isAuthenticated(req) { return Boolean(sessionUsername(req)); }
+function setSession(res, username) {
+  const token = randomToken();
+  sessions.set(token, username);
+  const secure = ORIGIN.startsWith('https://') ? ' Secure;' : '';
+  res.setHeader('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly;${secure} SameSite=Lax; Path=/; Max-Age=28800`);
+}
+function requireSession(req, res, next) {
+  if (!isAuthenticated(req)) return res.status(401).json({ error: 'Authentication required' });
+  next();
+}
+function createApiKey(username) {
+  const apiKey = `ds_${base64url(crypto.randomBytes(64))}`;
+  apiKeys.set(hashKey(apiKey), { username, createdAt: new Date().toISOString() });
+  return apiKey;
+}
+
+// Passwords are never stored in this file. AUTH_PASSWORD_HASH must be a scrypt hash
+// generated with: npm run hash-password -- YourPassword
+function verifyPassword(password) {
+  if (!AUTH_USERNAME || !AUTH_PASSWORD_HASH || !password) return false;
+  const parts = AUTH_PASSWORD_HASH.split('$');
+  if (parts.length !== 3 || parts[0] !== 'scrypt') return false;
+  try {
+    const salt = Buffer.from(parts[1], 'base64url');
+    const expected = Buffer.from(parts[2], 'base64url');
+    const actual = crypto.scryptSync(password, salt, expected.length);
+    return expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+  } catch {
+    return false;
+  }
+}
+
+app.get('/', (req, res) => res.redirect(isAuthenticated(req) ? '/index.html' : '/auth.html'));
+
+app.get('/auth.html', (req, res) => {
+  if (isAuthenticated(req)) return res.redirect('/index.html');
+  res.sendFile('auth.html', { root: '.' });
+});
+
+app.get('/index.html', async (req, res, next) => {
+  if (!isAuthenticated(req)) return res.redirect('/auth.html');
+  try {
+    const html = await fs.readFile('index.html', 'utf8');
+    res.type('html').send(html);
+  } catch (error) { next(error); }
+});
+
+app.get('/api/auth/status', (req, res) => res.json({
+  passwordConfigured: Boolean(AUTH_USERNAME && AUTH_PASSWORD_HASH),
+  passkeyConfigured: Boolean(RP_ID && ORIGIN),
+  enrolled: credentials.size > 0,
+  authenticated: isAuthenticated(req),
+  username: sessionUsername(req)
+}));
+
+app.post('/api/auth/password/login', (req, res) => {
+  const username = String(req.body?.username || '').trim().slice(0, 80);
+  const password = String(req.body?.password || '');
+  if (!AUTH_USERNAME || !AUTH_PASSWORD_HASH) {
+    return res.status(503).json({ error: 'Password login is not configured on the server yet.' });
+  }
+  if (username !== AUTH_USERNAME || !verifyPassword(password)) {
+    return res.status(401).json({ error: 'Incorrect username or password.' });
+  }
+  setSession(res, AUTH_USERNAME);
+  res.json({ verified: true, username: AUTH_USERNAME });
+});
+
+app.post('/api/auth/register/options', async (req, res) => {
+  const username = String(req.body?.username || '').trim().slice(0, 80);
+  if (!username) return res.status(400).json({ error: 'Username is required' });
+  const userID = base64url(crypto.createHash('sha256').update(username).digest());
+  const options = await generateRegistrationOptions({
+    rpName: RP_NAME,
+    rpID: RP_ID,
+    userName: username,
+    userID,
+    attestationType: 'none',
+    excludeCredentials: [...credentials.values()].filter(c => c.username === username).map(c => ({ id: c.id })),
+    authenticatorSelection: { residentKey: 'required', userVerification: 'required' }
+  });
+  challenges.set(`reg:${username}`, options.challenge);
+  res.json(options);
+});
+
+app.post('/api/auth/register/verify', async (req, res) => {
+  const username = String(req.body?.username || '').trim().slice(0, 80);
+  const expectedChallenge = challenges.get(`reg:${username}`);
+  if (!expectedChallenge) return res.status(400).json({ error: 'Registration challenge expired' });
+  try {
+    const verification = await verifyRegistrationResponse({
+      response: req.body.response,
+      expectedChallenge,
+      expectedOrigin: ORIGIN,
+      expectedRPID: RP_ID,
+      requireUserVerification: true
+    });
+    if (!verification.verified || !verification.registrationInfo) return res.status(400).json({ error: 'Passkey registration failed' });
+    const info = verification.registrationInfo;
+    credentials.set(info.credential.id, {
+      id: info.credential.id,
+      publicKey: info.credential.publicKey,
+      counter: info.credential.counter,
+      username
+    });
+    challenges.delete(`reg:${username}`);
+    setSession(res, username);
+    res.json({ verified: true, username, apiKey: createApiKey(username) });
+  } catch (error) { res.status(400).json({ error: error.message }); }
+});
+
+app.post('/api/auth/login/options', async (_req, res) => {
+  const options = await generateAuthenticationOptions({
+    rpID: RP_ID,
+    userVerification: 'required',
+    allowCredentials: [...credentials.values()].map(c => ({ id: c.id, type: 'public-key' }))
+  });
+  challenges.set('login', options.challenge);
+  res.json(options);
+});
+
+app.post('/api/auth/login/verify', async (req, res) => {
+  const expectedChallenge = challenges.get('login');
+  const credential = credentials.get(req.body?.response?.id);
+  if (!expectedChallenge) return res.status(400).json({ error: 'Login challenge expired' });
+  if (!credential) return res.status(401).json({ error: 'Unknown passkey' });
+  try {
+    const verification = await verifyAuthenticationResponse({
+      response: req.body.response,
+      expectedChallenge,
+      expectedOrigin: ORIGIN,
+      expectedRPID: RP_ID,
+      credential: { id: credential.id, publicKey: credential.publicKey, counter: credential.counter },
+      requireUserVerification: true
+    });
+    if (!verification.verified) return res.status(401).json({ error: 'Passkey verification failed' });
+    credential.counter = verification.authenticationInfo.newCounter;
+    challenges.delete('login');
+    setSession(res, credential.username);
+    res.json({ verified: true, username: credential.username, apiKey: createApiKey(credential.username) });
+  } catch (error) { res.status(401).json({ error: error.message }); }
+});
+
+app.post('/api/key/issue', requireSession, (req, res) => res.status(201).json({ apiKey: createApiKey(sessionUsername(req)) }));
+
+app.post('/api/analyze', requireSession, async (req, res) => {
+  if (!GEMINI_API_KEY) return res.status(503).json({ error: 'Server AI key is not configured' });
+  try {
+    const parts = Array.isArray(req.body?.parts) ? req.body.parts : [];
+    if (!parts.length) return res.status(400).json({ error: 'No analysis content supplied' });
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } })
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) return res.status(response.status || 502).json({ error: data.error?.message || 'AI request failed' });
+    res.json(data);
+  } catch (error) { res.status(502).json({ error: error.message }); }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const token = readCookie(req, COOKIE_NAME);
+  if (token) sessions.delete(token);
+  res.setHeader('Set-Cookie', `${COOKIE_NAME}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);
+  res.json({ ok: true });
+});
+
+app.get('/api/secure-config-check', requireSession, (_req, res) => res.json({ ok: true, message: 'Authenticated server endpoint is working. Secrets remain server-side.' }));
+
+app.use(express.static('.', { index: false }));
+app.listen(PORT, () => console.log(`DialysisSafe listening on ${ORIGIN}`));
