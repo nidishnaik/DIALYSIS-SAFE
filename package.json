@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "check": "node --check server.js",
-    "hash-password": "node scripts/hash-password.js"
+    "hash-password": "node scripts/hash-password.js",
+    "setup-password": "node scripts/setup-password-auth.js"
   },
   "dependencies": {
     "@simplewebauthn/server": "13.3.2",
