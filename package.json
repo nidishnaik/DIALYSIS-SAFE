@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@simplewebauthn/server": "13.3.2",
+    "dotenv": "16.6.1",
     "express": "5.1.0"
   }
 }
