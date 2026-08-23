@@ -27,9 +27,51 @@
 .pill-green{background:rgba(16,185,129,0.1);color:#10b981;border-color:rgba(16,185,129,0.4);}
 .cat-btn{transition:all 0.2s;white-space:nowrap;}
 .cat-btn.active{background:#eab308;color:#09090b;font-weight:700;border-color:#eab308;}
+
+/* DialysisSafe login screen */
+#login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(9,9,11,.97);backdrop-filter:blur(12px)}
+#login-screen.hidden{display:none}
+.login-card{width:100%;max-width:420px;background:#18181b;border:1px solid #3f3f46;border-radius:28px;padding:32px;box-shadow:0 24px 80px rgba(0,0,0,.55)}
+.login-input{width:100%;background:#09090b;border:1px solid #3f3f46;border-radius:16px;padding:14px 16px;color:#f4f4f5;outline:none}
+.login-input:focus{border-color:#facc15}
+#login-error{min-height:18px}
+
 </style>
 </head>
 <body class="tail-container bg-zinc-950 text-zinc-200 min-h-screen pb-24">
+
+<div id="login-screen" data-dialysis-safe-login="v1">
+  <div class="login-card">
+    <div class="flex items-center gap-3 mb-7">
+      <div class="w-12 h-12 bg-yellow-500 rounded-2xl flex items-center justify-center">
+        <i class="fa-solid fa-kidneys text-zinc-950 text-xl"></i>
+      </div>
+      <div>
+        <h2 class="logo-font text-2xl font-semibold text-white">DialysisSafe</h2>
+        <p class="text-[10px] text-yellow-400 uppercase tracking-[2px]">Secure access</p>
+      </div>
+    </div>
+    <h3 class="text-xl font-bold text-white">Welcome back</h3>
+    <p class="text-sm text-zinc-500 mt-1 mb-6">Log in to open the renal diet guide.</p>
+    <form onsubmit="return dialysisSafeLogin(event)" class="space-y-4">
+      <div>
+        <label for="login-username" class="block text-xs font-semibold text-zinc-400 mb-2">Username</label>
+        <input id="login-username" class="login-input" type="text" autocomplete="username" placeholder="Enter username" required>
+      </div>
+      <div>
+        <label for="login-password" class="block text-xs font-semibold text-zinc-400 mb-2">Password</label>
+        <input id="login-password" class="login-input" type="password" autocomplete="current-password" placeholder="Enter password" minlength="4" required>
+      </div>
+      <p id="login-error" class="text-xs text-red-400"></p>
+      <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-bold py-3.5 rounded-2xl transition-colors">
+        <i class="fa-solid fa-right-to-bracket mr-2"></i>Log in
+      </button>
+    </form>
+    <p class="text-[10px] text-zinc-600 leading-relaxed mt-5">Demo login: this screen is a browser-side UI gate, not real account security. Passwords are not stored or sent anywhere.</p>
+  </div>
+</div>
+
+
 <div class="max-w-5xl mx-auto">
 
 <!-- HEADER -->
@@ -869,5 +911,44 @@ window.onload = () => {
   setLang(activeLang);
 };
 </script>
+
+<script data-dialysis-safe-login="v1">
+(function(){
+  const KEY='dialysisSafeLoggedIn';
+  const NAME='dialysisSafeUser';
+  const screen=document.getElementById('login-screen');
+  if(localStorage.getItem(KEY)==='true') screen.classList.add('hidden');
+  window.dialysisSafeLogin=function(event){
+    event.preventDefault();
+    const username=document.getElementById('login-username').value.trim();
+    const password=document.getElementById('login-password').value;
+    const error=document.getElementById('login-error');
+    if(!username || password.length<4){
+      error.textContent='Enter a username and a password with at least 4 characters.';
+      return false;
+    }
+    localStorage.setItem(KEY,'true');
+    localStorage.setItem(NAME,username);
+    screen.classList.add('hidden');
+    return false;
+  };
+  window.dialysisSafeLogout=function(){
+    localStorage.removeItem(KEY);
+    localStorage.removeItem(NAME);
+    location.reload();
+  };
+  window.addEventListener('DOMContentLoaded',function(){
+    if(localStorage.getItem(KEY)==='true'){
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='fixed top-4 right-4 z-[100] px-3 py-2 rounded-full bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 hover:text-white';
+      button.innerHTML='<i class="fa-solid fa-right-from-bracket mr-1"></i>Log out';
+      button.onclick=window.dialysisSafeLogout;
+      document.body.appendChild(button);
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
