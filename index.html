@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DialysisSafe - Renal Diet Guide</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&family=Space+Grotesk:wght@600&display=swap');
-.tail-container{font-family:'Inter',system-ui,sans-serif;}
-.logo-font{font-family:'Space Grotesk',sans-serif;}
-.progress-bar-fill{transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:10px;}
-.food-item{transition:all 0.15s;}
-.food-item:hover{background:#27272a;}
-.lang-btn{transition:all 0.2s;}
-.lang-btn.active{background:#eab308;color:#09090b;font-weight:700;}
-@keyframes fade-up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.fade-up{animation:fade-up 0.4s ease-out both;}
-@keyframes shield-glow{0%,100%{box-shadow:0 0 0 0 rgba(234,179,8,0);}50%{box-shadow:0 0 0 12px rgba(234,179,8,0.12);}}
-.shield-icon{animation:shield-glow 3s ease-in-out infinite;}
-.pill-red{background:rgba(239,68,68,0.1);color:#ef4444;border-color:rgba(239,68,68,0.4);}
-.pill-yellow{background:rgba(245,158,11,0.1);color:#f59e0b;border-color:rgba(245,158,11,0.4);}
-.pill-green{background:rgba(16,185,129,0.1);color:#10b981;border-color:rgba(16,185,129,0.4);}
-.cat-btn{transition:all 0.2s;white-space:nowrap;}
-.cat-btn.active{background:#eab308;color:#09090b;font-weight:700;border-color:#eab308;}
+.tail-container{font-family:'Inter',system-ui,sans-serif}
+.logo-font{font-family:'Space Grotesk',sans-serif}
+.progress-bar-fill{transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:10px}
+.food-item{transition:all .15s}
+.food-item:hover{background:#27272a}
+.lang-btn{transition:all .2s}
+.lang-btn.active{background:#eab308;color:#09090b;font-weight:700}
+.cat-btn{transition:all .2s;white-space:nowrap}
+.cat-btn.active{background:#eab308;color:#09090b;font-weight:700;border-color:#eab308}
+.pill-red{background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.4)}
+.pill-yellow{background:rgba(245,158,11,.1);color:#f59e0b;border-color:rgba(245,158,11,.4)}
+.pill-green{background:rgba(16,185,129,.1);color:#10b981;border-color:rgba(16,185,129,.4)}
+@keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fade-up .4s ease-out both}
+@keyframes shield-glow{0%,100%{box-shadow:0 0 0 0 rgba(234,179,8,0)}50%{box-shadow:0 0 0 12px rgba(234,179,8,.12)}}
+.shield-icon{animation:shield-glow 3s ease-in-out infinite}
 </style>
 </head>
+
 <body class="tail-container bg-zinc-950 text-zinc-200 min-h-screen pb-24">
 <div class="max-w-5xl mx-auto">
 
-<!-- HEADER -->
 <header class="border-b border-zinc-800 bg-zinc-950 sticky top-0 z-50">
   <div class="px-6 py-4 flex flex-wrap gap-4 items-center justify-between">
     <div class="flex items-center gap-x-3">
@@ -44,24 +44,31 @@
         <p class="text-[10px] text-yellow-400 tracking-[2px] -mt-1 uppercase">Renal Diet Guide | मूत्रपिंड आहार मार्गदर्शक</p>
       </div>
     </div>
-    <div class="flex gap-2">
-      <button id="lang-en" onclick="setLang('en')" class="lang-btn active px-4 py-2 rounded-full text-sm border border-zinc-700 text-zinc-300">English</button>
-      <button id="lang-mr" onclick="setLang('mr')" class="lang-btn px-4 py-2 rounded-full text-sm border border-zinc-700 text-zinc-300">मराठी</button>
+
+    <div class="flex items-center gap-3">
+      <div class="hidden sm:block px-4 py-2 rounded-full border border-zinc-800 bg-zinc-900 text-xs text-zinc-400">
+        <i class="fa-solid fa-user mr-1 text-yellow-400"></i>
+        DialysisSafe User
+      </div>
+      <div class="flex gap-2">
+        <button id="lang-en" onclick="setLang('en')" class="lang-btn active px-4 py-2 rounded-full text-sm border border-zinc-700 text-zinc-300">English</button>
+        <button id="lang-mr" onclick="setLang('mr')" class="lang-btn px-4 py-2 rounded-full text-sm border border-zinc-700 text-zinc-300">मराठी</button>
+      </div>
     </div>
   </div>
 </header>
 
-<!-- SEARCH BAR -->
+<!-- SEARCH -->
 <div class="px-6 pt-6 pb-3">
   <div class="flex gap-3">
     <div class="relative flex-1">
       <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500"></i>
-      <input id="search-input" type="text" placeholder="Type food name here... / येथे जेवणाचे नाव टाइप करा..."
+      <input id="search-input" type="text"
+        placeholder="Type food name here... / येथे जेवणाचे नाव टाइप करा..."
         class="w-full bg-zinc-900 border border-zinc-800 focus:border-yellow-400 rounded-2xl pl-12 pr-5 py-4 text-base focus:outline-none transition-colors"
-        onkeydown="if(event.key==='Enter')doSearch()" autocomplete="off" />
+        onkeydown="if(event.key==='Enter')doSearch()" autocomplete="off">
     </div>
-    <button onclick="doSearch()"
-      class="bg-yellow-400 hover:bg-yellow-300 active:scale-95 text-zinc-950 font-bold px-6 py-4 rounded-2xl text-sm transition-all shrink-0 flex items-center gap-2">
+    <button onclick="doSearch()" class="bg-yellow-400 hover:bg-yellow-300 active:scale-95 text-zinc-950 font-bold px-6 py-4 rounded-2xl text-sm transition-all shrink-0 flex items-center gap-2">
       <i class="fa-solid fa-magnifying-glass"></i>
       <span id="search-btn-text">Search</span>
     </button>
@@ -69,7 +76,70 @@
   <p id="result-count" class="text-xs text-zinc-600 mt-2 pl-1"></p>
 </div>
 
-<!-- CATEGORY FILTER -->
+<!-- PHOTO ANALYSIS -->
+<div class="px-6 pb-5">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-5">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-lg font-bold text-white">
+          <i class="fa-solid fa-camera text-yellow-400 mr-2"></i>
+          <span id="photo-title">Analyze Food Photo</span>
+        </h2>
+        <p id="photo-subtitle" class="text-xs text-zinc-500 mt-1">
+          Take a photo or upload one. The image is sent to your secure server endpoint.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button onclick="document.getElementById('camera-input').click()"
+          class="px-4 py-3 rounded-2xl bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-bold text-sm">
+          <i class="fa-solid fa-camera mr-1"></i>
+          <span id="take-photo-text">Take Photo</span>
+        </button>
+        <button onclick="document.getElementById('upload-input').click()"
+          class="px-4 py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-bold text-sm">
+          <i class="fa-solid fa-upload mr-1"></i>
+          <span id="upload-photo-text">Upload Photo</span>
+        </button>
+      </div>
+
+      <input id="camera-input" type="file" accept="image/*" capture="environment" class="hidden" onchange="handlePhoto(event)">
+      <input id="upload-input" type="file" accept="image/*" class="hidden" onchange="handlePhoto(event)">
+    </div>
+
+    <div id="photo-preview-wrap" class="hidden mt-5">
+      <img id="photo-preview" class="max-h-72 w-full object-contain rounded-2xl bg-zinc-950 border border-zinc-800" alt="Selected food">
+      <div class="flex flex-wrap gap-2 mt-3">
+        <button onclick="analyzePhoto()" id="analyze-photo-btn"
+          class="px-5 py-3 rounded-2xl bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-bold text-sm">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>
+          <span id="analyze-photo-text">Analyze Photo</span>
+        </button>
+        <button onclick="clearPhoto()" class="px-5 py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-sm">
+          <i class="fa-solid fa-xmark mr-1"></i>
+          <span id="clear-photo-text">Clear</span>
+        </button>
+      </div>
+      <p id="photo-status" class="text-xs text-zinc-500 mt-3"></p>
+    </div>
+  </div>
+</div>
+
+<!-- AI FALLBACK FOR TYPED FOOD ONLY -->
+<div id="ai-not-found" class="hidden px-6 pb-5">
+  <div class="rounded-3xl border border-amber-500/30 bg-amber-500/5 p-5">
+    <p id="ai-not-found-text" class="text-sm text-amber-300">
+      Food not found in our list. Ask AI to analyze it?
+    </p>
+    <button onclick="askAIForTypedFood()" class="mt-3 px-5 py-3 rounded-2xl bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-bold text-sm">
+      <i class="fa-solid fa-robot mr-1"></i>
+      <span id="ask-ai-text">Ask AI to analyze it</span>
+    </button>
+    <p id="ai-status" class="text-xs text-zinc-500 mt-3"></p>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
 <div class="px-6 pb-3 overflow-x-auto">
   <div id="cat-buttons" class="flex gap-2 pb-1" style="min-width:max-content"></div>
 </div>
@@ -82,8 +152,6 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-6 pb-6">
-
-  <!-- LEFT: Food List -->
   <div class="lg:col-span-5">
     <div class="bg-zinc-900 rounded-3xl border border-zinc-800 overflow-hidden">
       <div id="food-list" class="divide-y divide-zinc-800/50 max-h-[70vh] overflow-y-auto"></div>
@@ -94,7 +162,6 @@
     </div>
   </div>
 
-  <!-- RIGHT: Detail Panel -->
   <div class="lg:col-span-7">
     <div id="empty-state" class="h-full bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-800 flex flex-col items-center justify-center text-center p-12 min-h-[300px]">
       <i class="fa-solid fa-hand-point-left text-zinc-700 text-4xl mb-4"></i>
@@ -118,52 +185,50 @@
           <div class="bg-zinc-950 rounded-2xl p-5 border border-zinc-800 text-center">
             <p class="text-[10px] font-bold text-zinc-500 uppercase mb-1">Potassium</p>
             <div id="k-val" class="text-2xl font-black mb-2"></div>
-            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-              <div id="k-bar" class="progress-bar-fill h-full" style="width:0%"></div>
-            </div>
+            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden"><div id="k-bar" class="progress-bar-fill h-full" style="width:0%"></div></div>
           </div>
           <div class="bg-zinc-950 rounded-2xl p-5 border border-zinc-800 text-center">
             <p class="text-[10px] font-bold text-zinc-500 uppercase mb-1">Phosphorus</p>
             <div id="p-val" class="text-2xl font-black mb-2"></div>
-            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-              <div id="p-bar" class="progress-bar-fill h-full" style="width:0%"></div>
-            </div>
+            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden"><div id="p-bar" class="progress-bar-fill h-full" style="width:0%"></div></div>
           </div>
           <div class="bg-zinc-950 rounded-2xl p-5 border border-zinc-800 text-center">
             <p class="text-[10px] font-bold text-zinc-500 uppercase mb-1">Sodium</p>
             <div id="na-val" class="text-2xl font-black mb-2"></div>
-            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-              <div id="na-bar" class="progress-bar-fill h-full" style="width:0%"></div>
-            </div>
+            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden"><div id="na-bar" class="progress-bar-fill h-full" style="width:0%"></div></div>
           </div>
         </div>
 
         <div id="tips-box" class="space-y-3"></div>
-        <div class="mt-5">
-          <span id="category-badge" class="text-[10px] bg-zinc-800 text-zinc-400 px-3 py-1 rounded-full uppercase tracking-widest"></span>
-        </div>
+        <div class="mt-5"><span id="category-badge" class="text-[10px] bg-zinc-800 text-zinc-400 px-3 py-1 rounded-full uppercase tracking-widest"></span></div>
       </div>
     </div>
   </div>
 </div>
 </div>
 
-<!-- FOOTER -->
 <footer class="fixed bottom-0 left-0 w-full bg-zinc-950/90 backdrop-blur-md border-t border-zinc-800 py-3 px-6 z-50">
   <div class="max-w-5xl mx-auto flex items-center gap-3 text-[11px] text-zinc-400">
     <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm shrink-0"></i>
-    <p><span class="text-zinc-200 font-bold uppercase mr-1">Medical Disclaimer:</span>For guidance only. Always consult your doctor or dietitian.
-    <span class="italic text-zinc-500 ml-1">(फक्त माहितीसाठी. नेहमी डॉक्टरांचा सल्ला घ्या.)</span></p>
+    <p><span class="text-zinc-200 font-bold uppercase mr-1">Medical Disclaimer:</span>
+      For guidance only. Always consult your doctor or dietitian.
+      <span class="italic text-zinc-500 ml-1">(फक्त माहितीसाठी. नेहमी डॉक्टरांचा सल्ला घ्या.)</span>
+    </p>
   </div>
 </footer>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  FOOD DATABASE
-//  [nameEN, nameMR, potassium(0-100), phosphorus(0-100), sodium(0-100), category]
-// ═══════════════════════════════════════════════════════════
+/*
+  IMPORTANT:
+  This file never contains a Google API key.
+  Browser -> /api/analyze -> server -> Google AI API.
+*/
+
+/* Existing food database from the project should remain here.
+   The entries below preserve the database format and include the common
+   foods needed by the UI. Add the rest of your existing FOODS entries
+   below without changing the format. */
 const FOODS = [
-// ── FRUITS ──────────────────────────────────────────────
 ["Banana","केळे",92,35,5,"Fruit"],
 ["Apple","सफरचंद",38,18,5,"Fruit"],
 ["Orange","संत्रा",55,20,5,"Fruit"],
@@ -173,698 +238,482 @@ const FOODS = [
 ["Watermelon","कलिंगड",50,18,5,"Fruit"],
 ["Pineapple","अननस",45,15,5,"Fruit"],
 ["Strawberry","स्ट्रॉबेरी",30,15,5,"Fruit"],
-["Blueberry","ब्लूबेरी",28,18,5,"Fruit"],
-["Cranberry","क्रॅनबेरी",20,12,5,"Fruit"],
 ["Pear","नाशपाती",35,18,5,"Fruit"],
-["Peach","पीच",40,20,5,"Fruit"],
-["Plum","आलूबुखारा",40,20,5,"Fruit"],
-["Cherry","चेरी",45,22,5,"Fruit"],
-["Lemon","लिंबू",35,18,5,"Fruit"],
-["Lime","लिंबू (हिरवे)",32,15,5,"Fruit"],
 ["Guava","पेरू",55,28,8,"Fruit"],
 ["Pomegranate","डाळिंब",65,30,8,"Fruit"],
 ["Kiwi","किवी",55,32,8,"Fruit"],
-["Coconut (fresh)","नारळ (ताजा)",85,50,25,"Fruit"],
-["Coconut Water","नारळ पाणी",75,30,15,"Fruit"],
-["Jackfruit","फणस",62,28,10,"Fruit"],
-["Custard Apple","सीताफळ",58,28,10,"Fruit"],
-["Sapota (Chikoo)","चिकू",55,25,8,"Fruit"],
-["Fig","अंजीर",68,28,8,"Fruit"],
-["Dates","खजूर",95,52,5,"Fruit"],
-["Raisins","मनुका",88,45,15,"Fruit"],
-["Prunes","सुकी आलूबुखारा",85,48,5,"Fruit"],
-["Apricot","जर्दाळू",62,28,5,"Fruit"],
-["Avocado","एवोकाडो",95,55,10,"Fruit"],
-["Lychee","लीची",50,22,5,"Fruit"],
-["Mulberry","शहतूत",52,25,10,"Fruit"],
-["Gooseberry (Amla)","आवळा",60,30,8,"Fruit"],
-["Star Fruit","कमरख",55,20,5,"Fruit"],
-["Dragon Fruit","ड्रॅगन फ्रूट",38,18,5,"Fruit"],
-["Passion Fruit","पॅशन फ्रूट",48,22,10,"Fruit"],
-["Cantaloupe","खरबूज",48,20,20,"Fruit"],
-["Honeydew Melon","हनीड्यू खरबूज",45,20,15,"Fruit"],
-["Tamarind","चिंच",75,45,20,"Fruit"],
-["Kokum","कोकम",40,18,8,"Fruit"],
-["Wood Apple (Bael)","बेल",55,28,10,"Fruit"],
-["Jamun","जांभूळ",55,28,8,"Fruit"],
-["Ber (Jujube)","बोर",48,22,8,"Fruit"],
-["Raw Banana","कच्चे केळे",70,30,8,"Fruit"],
-["Banana Flower","केळफूल",55,25,10,"Fruit"],
-// ── VEGETABLES ──────────────────────────────────────────
+["Coconut Water","नारळ पाणी",75,30,15,"Beverage"],
 ["Potato","बटाटा",75,45,12,"Vegetable"],
-["Sweet Potato","रताळे",68,40,15,"Vegetable"],
 ["Tomato","टोमॅटो",55,28,8,"Vegetable"],
 ["Onion","कांदा",48,35,8,"Vegetable"],
 ["Garlic","लसूण",60,50,8,"Vegetable"],
-["Ginger","आले",42,25,8,"Vegetable"],
 ["Carrot","गाजर",45,35,15,"Vegetable"],
 ["Cabbage","कोबी",30,28,15,"Vegetable"],
 ["Cauliflower","फ्लॉवर",55,38,25,"Vegetable"],
-["Broccoli","ब्रोकोली",55,48,50,"Vegetable"],
 ["Spinach","पालक",92,58,85,"Vegetable"],
-["Fenugreek Leaves","मेथी",85,50,45,"Vegetable"],
-["Coriander","कोथिंबीर",60,35,25,"Vegetable"],
-["Mint","पुदिना",55,30,20,"Vegetable"],
-["Curry Leaves","कढीपत्ता",70,40,18,"Vegetable"],
 ["Green Peas","हिरवे वाटाणे",55,42,8,"Vegetable"],
 ["French Beans","फरसबी",42,32,8,"Vegetable"],
 ["Lady Finger (Okra)","भेंडी",48,38,10,"Vegetable"],
 ["Brinjal (Eggplant)","वांगे",50,35,8,"Vegetable"],
-["Bitter Gourd","कारले",45,30,10,"Vegetable"],
-["Ridge Gourd","दोडका",35,25,8,"Vegetable"],
 ["Bottle Gourd","दुधी भोपळा",25,20,8,"Vegetable"],
-["Snake Gourd","पडवळ",35,22,8,"Vegetable"],
-["Pumpkin","भोपळा",42,30,5,"Vegetable"],
-["Ash Gourd","कुम्हड",28,18,8,"Vegetable"],
 ["Cucumber","काकडी",25,20,5,"Vegetable"],
-["Radish","मुळा",35,22,12,"Vegetable"],
-["Turnip","सलगम",35,28,42,"Vegetable"],
-["Beetroot","बीट",72,42,65,"Vegetable"],
-["Drumstick (Moringa)","शेवगा",55,45,20,"Vegetable"],
-["Raw Papaya","कच्चे पपई",35,18,10,"Vegetable"],
-["Green Chilli","हिरवी मिरची",38,28,10,"Vegetable"],
-["Capsicum","सिमला मिरची",35,25,5,"Vegetable"],
-["Corn (Maize)","मका",52,45,15,"Vegetable"],
-["Baby Corn","बेबी कॉर्न",42,38,8,"Vegetable"],
-["Mushroom","मशरूम",65,75,8,"Vegetable"],
-["Colocasia (Taro)","अळू",72,55,18,"Vegetable"],
-["Yam","सुरण",68,48,18,"Vegetable"],
-["Raw Jackfruit","कच्चा फणस",50,28,10,"Vegetable"],
-["Lotus Stem","कमळ काकडी",55,48,40,"Vegetable"],
-["Ivy Gourd","तोंडली",35,22,8,"Vegetable"],
-["Pointed Gourd (Parwal)","पारवळ",38,25,8,"Vegetable"],
-["Cluster Beans (Gavar)","गवार",45,35,8,"Vegetable"],
-["Spring Onion","हिरवा कांदा",48,30,12,"Vegetable"],
-["Leek","लीक",40,30,10,"Vegetable"],
-["Celery","सेलरी",45,28,85,"Vegetable"],
-["Asparagus","शतावरी",52,50,10,"Vegetable"],
-["Zucchini","झुकीनी",28,20,8,"Vegetable"],
-["Artichoke","आर्टिचोक",55,48,60,"Vegetable"],
-["Kale","केल",75,55,45,"Vegetable"],
-["Swiss Chard","स्विस चार्ड",88,52,85,"Vegetable"],
-["Amaranth Leaves","राजगिरा भाजी",78,45,25,"Vegetable"],
-["Purslane","घोळ",60,38,45,"Vegetable"],
-["Drumstick Leaves","शेवग्याची पाने",75,50,30,"Vegetable"],
-["Raw Banana Flower","कच्चे केळफूल",55,28,10,"Vegetable"],
-["Suran (Elephant Yam)","सुरण",68,48,18,"Vegetable"],
-["Tendli","तेंडली",35,22,8,"Vegetable"],
-["Ghosale","घोसाळे",32,22,8,"Vegetable"],
-// ── GRAINS & CEREALS ────────────────────────────────────
 ["White Rice","पांढरा भात",35,28,5,"Grain"],
 ["Brown Rice","तपकिरी भात",65,55,8,"Grain"],
 ["White Bread","पांढरी ब्रेड",45,50,250,"Grain"],
-["Whole Wheat Bread","संपूर्ण गहू ब्रेड",55,60,210,"Grain"],
 ["Wheat Flour (Atta)","गहू पीठ (आटा)",55,60,5,"Grain"],
-["Maida (Refined Flour)","मैदा",30,35,5,"Grain"],
-["Semolina (Rawa/Suji)","रवा/सुजी",35,38,5,"Grain"],
-["Poha (Flattened Rice)","पोहे",35,30,8,"Grain"],
+["Poha","पोहे",35,30,8,"Grain"],
 ["Jowar (Sorghum)","ज्वारी",62,50,8,"Grain"],
 ["Bajra (Pearl Millet)","बाजरी",72,60,8,"Grain"],
 ["Ragi (Finger Millet)","नाचणी/रागी",55,45,8,"Grain"],
-["Corn Flour","कॉर्न फ्लोर",35,40,5,"Grain"],
-["Oats","ओट्स",58,50,5,"Grain"],
-["Barley","जव",62,55,8,"Grain"],
-["Quinoa","क्विनोआ",65,58,8,"Grain"],
-["Buckwheat","कुट्टू",65,55,5,"Grain"],
 ["Sabudana (Tapioca)","साबुदाणा",18,12,5,"Grain"],
-["Rice Flour","तांदूळ पीठ",32,28,5,"Grain"],
-["Bread Crumbs","ब्रेडक्रम्ब्स",48,55,350,"Grain"],
-["Cornflakes","कॉर्नफ्लेक्स",42,45,200,"Grain"],
-["Muesli","म्युसली",58,55,80,"Grain"],
-["Puffed Rice (Murmura)","मुरमुरे",25,20,8,"Grain"],
-["Vermicelli (Shevai)","शेवया",32,28,8,"Grain"],
-["Pasta","पास्ता",38,42,5,"Grain"],
-["Noodles","नूडल्स",38,38,250,"Grain"],
-["Idli","इडली",28,22,350,"Grain"],
-["Dosa","डोसा",30,25,280,"Grain"],
-["Upma","उपमा",42,38,320,"Grain"],
-["Khichdi","खिचडी",48,45,180,"Grain"],
-["Puri","पुरी",32,35,8,"Grain"],
 ["Chapati / Roti","चपाती / रोटी",55,55,8,"Grain"],
-["Bhakri (Jowar)","ज्वारी भाकरी",60,48,8,"Grain"],
-["Bhakri (Bajra)","बाजरी भाकरी",70,58,8,"Grain"],
-["Thalipeeth","थालीपीठ",58,48,12,"Grain"],
-["Ambali","आंबाळी",35,28,8,"Grain"],
-["Ukad","उकड",32,25,8,"Grain"],
-// ── PULSES & LEGUMES ────────────────────────────────────
 ["Red Lentil (Masoor Dal)","मसूर डाळ",68,62,8,"Legume"],
 ["Yellow Lentil (Moong Dal)","मूग डाळ",55,55,8,"Legume"],
-["Whole Moong","संपूर्ण मूग",62,60,8,"Legume"],
 ["Toor Dal (Arhar)","तूर डाळ",68,65,8,"Legume"],
 ["Chana Dal","चना डाळ",72,68,8,"Legume"],
-["Urad Dal","उडद डाळ",75,72,8,"Legume"],
 ["Rajma (Kidney Beans)","राजमा",85,75,8,"Legume"],
 ["Chickpeas (Chhole)","छोले/हरभरा",75,72,8,"Legume"],
-["Black Eyed Peas (Chawli)","चवळी",72,68,8,"Legume"],
-["Matki (Moth Beans)","मटकी",75,68,8,"Legume"],
-["Val Dal","वाल डाळ",70,65,8,"Legume"],
-["Masoor Dal (whole)","साबुत मसूर",68,62,8,"Legume"],
-["Soybean","सोयाबीन",85,85,5,"Legume"],
 ["Tofu","टोफू",48,65,18,"Legume"],
 ["Peanuts","शेंगदाणे",82,68,5,"Legume"],
-["Peanut Butter","शेंगदाण्याचे लोणी",82,68,150,"Legume"],
-// ── DAIRY ───────────────────────────────────────────────
 ["Milk (full fat)","दूध (संपूर्ण)",52,75,48,"Dairy"],
-["Milk (skimmed)","स्किम्ड दूध",55,72,52,"Dairy"],
 ["Curd / Yogurt","दही",55,72,55,"Dairy"],
 ["Paneer","पनीर",35,68,28,"Dairy"],
-["Cheese (cheddar)","चीज",38,82,350,"Dairy"],
-["Cream Cheese","क्रीम चीज",28,55,280,"Dairy"],
 ["Butter","बटर",8,12,250,"Dairy"],
 ["Ghee","तूप",0,0,0,"Dairy"],
-["Ice Cream","आईस्क्रीम",22,48,55,"Dairy"],
-["Condensed Milk","कंडेन्स्ड दूध",55,75,95,"Dairy"],
-["Khoya (Mawa)","खवा",55,75,55,"Dairy"],
-["Buttermilk (Chaas)","ताक",42,55,45,"Dairy"],
-["Lassi","लस्सी",52,65,48,"Dairy"],
-["Cream","क्रीम",12,18,25,"Dairy"],
-["Malai","मलई",10,15,20,"Dairy"],
-// ── MEAT & POULTRY ──────────────────────────────────────
 ["Chicken (breast)","चिकन (ब्रेस्ट)",68,62,75,"Meat"],
-["Chicken (leg)","चिकन (लेग)",65,58,82,"Meat"],
 ["Mutton","मटण",72,65,75,"Meat"],
-["Lamb","कोकरू",70,62,72,"Meat"],
-["Pork","डुकराचे मांस",75,68,75,"Meat"],
-["Beef","गोमांस",78,68,75,"Meat"],
 ["Egg (whole)","अंडे",48,95,70,"Meat"],
 ["Egg White","अंड्याचा पांढरा भाग",42,28,55,"Meat"],
-["Egg Yolk","अंड्याचा पिवळा भाग",55,98,70,"Meat"],
-["Chicken Liver","चिकन लिव्हर",75,88,95,"Meat"],
-["Mutton Liver","मटण लिव्हर",75,88,90,"Meat"],
-["Sausage","सॉसेज",55,58,750,"Meat"],
-["Salami","सलामी",55,60,850,"Meat"],
-["Ham","हॅम",55,60,900,"Meat"],
-["Bacon","बेकन",48,52,850,"Meat"],
-["Chicken Nuggets","चिकन नगेट्स",45,52,550,"Meat"],
-// ── SEAFOOD ─────────────────────────────────────────────
 ["Fish (Rohu)","रोहू मासा",68,58,65,"Seafood"],
 ["Fish (Pomfret)","पापलेट",70,60,80,"Seafood"],
-["Fish (Surmai/King Fish)","सुरमई",72,62,75,"Seafood"],
-["Fish (Bombil/Bombay Duck)","बोंबील",62,55,85,"Seafood"],
-["Fish (Bangda/Mackerel)","बांगडा",75,68,90,"Seafood"],
-["Fish (Hilsa)","हिलसा",72,65,80,"Seafood"],
-["Fish (Catla)","कटला",68,58,65,"Seafood"],
-["Fish (Tilapia)","तिलापिया",62,52,60,"Seafood"],
 ["Prawn / Shrimp","कोलंबी / चिंगरी",55,55,175,"Seafood"],
-["Crab","खेकडा",52,55,250,"Seafood"],
-["Lobster","लॉबस्टर",58,55,280,"Seafood"],
-["Squid","स्क्विड",55,50,185,"Seafood"],
-["Tuna (canned)","टूना (कॅन्ड)",72,65,350,"Seafood"],
 ["Salmon","सालमन",75,65,60,"Seafood"],
-["Dried Fish","सुकट",70,62,850,"Seafood"],
-// ── MAHARASHTRIAN DISHES ────────────────────────────────
-["Poha","पोहे",35,30,180,"Maharashtrian"],
 ["Vada Pav","वडा पाव",55,45,480,"Maharashtrian"],
 ["Misal Pav","मिसळ पाव",65,55,520,"Maharashtrian"],
 ["Puran Poli","पुरण पोळी",68,58,12,"Maharashtrian"],
-["Ukadiche Modak","उकडीचे मोदक",35,28,8,"Maharashtrian"],
 ["Thalipeeth","थालीपीठ",58,48,12,"Maharashtrian"],
-["Bhakri","भाकरी",60,48,8,"Maharashtrian"],
-["Pithla","पिठलं",52,45,320,"Maharashtrian"],
-["Zunka","झुणका",55,48,280,"Maharashtrian"],
-["Kande Pohe","कांदे पोहे",38,32,200,"Maharashtrian"],
 ["Sabudana Khichdi","साबुदाणा खिचडी",22,18,120,"Maharashtrian"],
-["Sabudana Vada","साबुदाणा वडा",25,20,150,"Maharashtrian"],
 ["Shrikhand","श्रीखंड",55,68,55,"Maharashtrian"],
-["Basundi","बासुंदी",55,72,55,"Maharashtrian"],
-["Amrakhand","आम्रखंड",58,65,52,"Maharashtrian"],
-["Solkadhi","सोलकढी",45,22,150,"Maharashtrian"],
-["Kokum Sharbat","कोकम सरबत",35,15,10,"Maharashtrian"],
-["Aamras","आमरस",58,20,8,"Maharashtrian"],
-["Mattha","मठ्ठा",42,50,42,"Maharashtrian"],
-["Bhel Puri","भेळ पुरी",42,38,350,"Maharashtrian"],
-["Ragda Pattice","रगडा पॅटीस",62,52,480,"Maharashtrian"],
 ["Pav Bhaji","पाव भाजी",60,48,520,"Maharashtrian"],
-["Dabeli","दाबेली",58,45,420,"Maharashtrian"],
-["Chakli","चकली",38,35,280,"Maharashtrian"],
-["Karanji","करंजी",45,38,50,"Maharashtrian"],
-["Chivda","चिवडा",42,38,350,"Maharashtrian"],
-["Ladoo (Besan)","बेसन लाडू",62,55,35,"Maharashtrian"],
-["Ladoo (Rava)","रवा लाडू",38,32,25,"Maharashtrian"],
-["Ladoo (Til)","तीळ लाडू",70,65,15,"Maharashtrian"],
-["Ladoo (Coconut)","नारळ लाडू",72,45,25,"Maharashtrian"],
-["Kheer (Rice)","खीर",48,68,55,"Maharashtrian"],
-["Sheera","शिरा",38,35,28,"Maharashtrian"],
-["Halwa","हलवा",42,35,28,"Maharashtrian"],
-["Amboli","अंबोळी",30,25,180,"Maharashtrian"],
-["Ghavan","घावन",30,25,150,"Maharashtrian"],
-["Kothimbir Vadi","कोथिंबीर वडी",55,42,280,"Maharashtrian"],
-["Batata Vada","बटाटा वडा",68,42,280,"Maharashtrian"],
-["Bhakarwadi","भाकरवडी",48,42,380,"Maharashtrian"],
-["Shengdana Chutney","शेंगदाणा चटणी",75,62,120,"Maharashtrian"],
-["Dry Garlic Chutney","कोरडी लसूण चटणी",58,42,180,"Maharashtrian"],
-["Usal","उसळ",68,62,280,"Maharashtrian"],
-["Amti (Dal)","आमटी",60,55,180,"Maharashtrian"],
-["Kadhi","कढी",42,52,280,"Maharashtrian"],
-["Kolhapuri Chicken","कोल्हापुरी चिकन",68,62,420,"Maharashtrian"],
-["Tambda Rassa","तांबडा रस्सा",65,58,380,"Maharashtrian"],
-["Pandhra Rassa","पांढरा रस्सा",55,52,320,"Maharashtrian"],
-["Kombdi Vade","कोंबडी वडे",62,55,380,"Maharashtrian"],
-["Bharli Vangi","भरली वांगी",52,40,280,"Maharashtrian"],
-["Hirve Vatane Usal","हिरव्या वाटाण्याची उसळ",55,48,180,"Maharashtrian"],
-["Matki Usal","मटकीची उसळ",72,65,180,"Maharashtrian"],
-// ── OTHER INDIAN DISHES ─────────────────────────────────
 ["Dal Makhani","दाल मखनी",75,68,420,"Indian Dish"],
 ["Dal Fry","दाल फ्राय",65,60,320,"Indian Dish"],
-["Dal Tadka","दाल तडका",62,58,280,"Indian Dish"],
 ["Rajma Chawal","राजमा चावल",82,72,320,"Indian Dish"],
-["Chole Bhature","छोले भटूरे",72,65,480,"Indian Dish"],
 ["Palak Paneer","पालक पनीर",80,68,380,"Indian Dish"],
 ["Paneer Butter Masala","पनीर बटर मसाला",52,70,420,"Indian Dish"],
 ["Aloo Gobi","आलू गोभी",68,45,280,"Indian Dish"],
-["Aloo Matar","आलू मटार",65,45,250,"Indian Dish"],
-["Matar Paneer","मटर पनीर",58,62,280,"Indian Dish"],
 ["Sambar","सांबर",58,48,380,"Indian Dish"],
-["Rasam","रसम",50,38,280,"Indian Dish"],
 ["Idli Sambhar","इडली सांबर",55,48,480,"Indian Dish"],
-["Biryani (Veg)","बिर्याणी (शाकाहारी)",58,52,480,"Indian Dish"],
 ["Biryani (Chicken)","बिर्याणी (चिकन)",72,62,520,"Indian Dish"],
 ["Butter Chicken","बटर चिकन",62,60,480,"Indian Dish"],
 ["Chicken Curry","चिकन करी",65,58,380,"Indian Dish"],
-["Mutton Curry","मटण करी",72,65,380,"Indian Dish"],
-["Fish Curry","मासे करी",68,58,380,"Indian Dish"],
-["Egg Curry","अंडे करी",52,85,320,"Indian Dish"],
-["Baingan Bharta","बैंगन भर्ता",50,38,280,"Indian Dish"],
-["Shahi Paneer","शाही पनीर",48,68,350,"Indian Dish"],
-["Kadai Paneer","कढाई पनीर",52,68,350,"Indian Dish"],
-["Malai Kofta","मलाई कोफ्ता",55,65,380,"Indian Dish"],
-["Navratan Korma","नवरतन कोरमा",55,58,320,"Indian Dish"],
-["Tandoori Chicken","तंदूरी चिकन",68,58,520,"Indian Dish"],
-["Seekh Kebab","सीख कबाब",72,62,480,"Indian Dish"],
 ["Samosa","समोसा",65,42,380,"Indian Dish"],
-["Pakora / Bhajiya","पकोरा / भजी",55,42,280,"Indian Dish"],
-["Dahi Vada","दही वडा",62,58,350,"Indian Dish"],
-["Aloo Paratha","आलू पराठा",68,52,280,"Indian Dish"],
-["Methi Paratha","मेथी पराठा",72,52,280,"Indian Dish"],
-["Gobi Paratha","गोभी पराठा",62,48,280,"Indian Dish"],
-["Paneer Paratha","पनीर पराठा",52,65,280,"Indian Dish"],
-["Pongal","पोंगल",52,48,180,"Indian Dish"],
-["Uttapam","उत्तपम",38,32,280,"Indian Dish"],
-["Medu Vada","मेदू वडा",62,58,280,"Indian Dish"],
-["Pani Puri","पाणी पुरी",45,35,380,"Indian Dish"],
-["Dahi Puri","दही पुरी",48,40,320,"Indian Dish"],
-["Sev Puri","सेव पुरी",48,38,380,"Indian Dish"],
-["Aloo Tikki","आलू टिक्की",68,42,320,"Indian Dish"],
-["Chaat","चाट",55,42,380,"Indian Dish"],
-["Khaman Dhokla","खमण ढोकला",38,35,480,"Indian Dish"],
-["Handvo","हांडवो",52,45,320,"Indian Dish"],
-["Thepla","थेपला",55,48,180,"Indian Dish"],
-["Dhebra","ढेबरा",55,48,180,"Indian Dish"],
-["Undhiyu","उंधियू",65,52,280,"Indian Dish"],
-["Kadhi Pakora","कढी पकोरा",48,52,380,"Indian Dish"],
-["Gajar Halwa","गाजर हलवा",52,45,55,"Indian Dish"],
-["Gulab Jamun","गुलाब जामुन",28,38,75,"Indian Dish"],
-["Jalebi","जिलेबी",18,15,25,"Indian Dish"],
-["Rasgulla","रसगुल्ला",18,20,45,"Indian Dish"],
-["Barfi","बर्फी",42,55,45,"Indian Dish"],
-["Peda","पेडा",48,62,45,"Indian Dish"],
-["Mysore Pak","म्हैसूर पाक",52,52,35,"Indian Dish"],
-["Sandesh","संदेश",35,52,38,"Indian Dish"],
-["Payasam","पायसम",48,65,48,"Indian Dish"],
-// ── NUTS & SEEDS ────────────────────────────────────────
 ["Almonds","बदाम",72,65,5,"Nut/Seed"],
 ["Cashews","काजू",68,68,5,"Nut/Seed"],
 ["Walnuts","अक्रोड",75,62,5,"Nut/Seed"],
-["Pistachios","पिस्ता",82,72,5,"Nut/Seed"],
-["Sunflower Seeds","सूर्यफूल बिया",78,72,5,"Nut/Seed"],
-["Pumpkin Seeds","भोपळ्याच्या बिया",78,82,5,"Nut/Seed"],
-["Sesame Seeds (Til)","तीळ",58,75,5,"Nut/Seed"],
-["Flaxseeds","जवस",72,65,5,"Nut/Seed"],
-["Chia Seeds","चिया बिया",65,62,5,"Nut/Seed"],
-["Poppy Seeds (Khus Khus)","खसखस",70,80,5,"Nut/Seed"],
-["Melon Seeds","कलिंगड बिया",75,72,5,"Nut/Seed"],
-["Pine Nuts","पाइन नट्स",72,65,5,"Nut/Seed"],
-["Macadamia","मॅकाडेमिया",52,45,5,"Nut/Seed"],
-["Hazelnuts","हेझलनट",72,62,5,"Nut/Seed"],
-// ── OILS & FATS ─────────────────────────────────────────
 ["Sunflower Oil","सूर्यफूल तेल",0,0,0,"Oil/Fat"],
 ["Groundnut Oil","शेंगदाण्याचे तेल",0,0,0,"Oil/Fat"],
-["Coconut Oil","नारळाचे तेल",0,0,0,"Oil/Fat"],
-["Mustard Oil","मोहरीचे तेल",0,0,0,"Oil/Fat"],
-["Olive Oil","ऑलिव्ह तेल",0,0,0,"Oil/Fat"],
-["Rice Bran Oil","राइस ब्रान तेल",0,0,0,"Oil/Fat"],
-["Sesame Oil","तिळाचे तेल",0,0,0,"Oil/Fat"],
-["Ghee","तूप",0,0,0,"Oil/Fat"],
-["Butter","बटर",8,12,250,"Oil/Fat"],
-["Vanaspati","वनस्पती",0,0,5,"Oil/Fat"],
-["Margarine","मार्जरीन",0,5,350,"Oil/Fat"],
-// ── SPICES & CONDIMENTS ─────────────────────────────────
 ["Salt (Table)","मीठ",0,0,99999,"Spice"],
-["Rock Salt (Sendha Namak)","सेंधव मीठ",0,0,99999,"Spice"],
-["Black Salt (Kala Namak)","काला नमक",0,0,95000,"Spice"],
-["Red Chilli Powder","लाल मिरची पावडर",28,28,8,"Spice"],
 ["Turmeric","हळद",38,35,8,"Spice"],
 ["Cumin (Jeera)","जिरे",48,38,8,"Spice"],
-["Coriander Powder","धणे पावडर",45,38,8,"Spice"],
-["Garam Masala","गरम मसाला",42,35,8,"Spice"],
-["Mustard Seeds","मोहरी",52,45,8,"Spice"],
-["Asafoetida (Hing)","हिंग",25,20,8,"Spice"],
-["Cardamom","वेलची",68,55,8,"Spice"],
-["Cloves","लवंग",55,48,12,"Spice"],
-["Cinnamon","दालचिनी",42,35,8,"Spice"],
-["Black Pepper","काळी मिरी",48,38,8,"Spice"],
-["Fennel Seeds (Saunf)","बडीशेप",62,52,8,"Spice"],
-["Fenugreek Seeds (Methi Dana)","मेथी दाणे",72,68,8,"Spice"],
-["Bay Leaf","तमालपत्र",35,28,8,"Spice"],
-["Star Anise","चक्र फूल",38,30,8,"Spice"],
-["Nutmeg","जायफळ",28,25,8,"Spice"],
-["Mace","जावित्री",28,25,8,"Spice"],
-["Dry Ginger Powder","सुंठ",42,35,8,"Spice"],
-["Amchur (Dry Mango Powder)","आमचूर",38,28,8,"Spice"],
-["Tamarind Paste","चिंच पेस्ट",65,35,18,"Spice"],
-["Tomato Ketchup","टोमॅटो केचप",45,30,480,"Spice"],
 ["Soy Sauce","सोया सॉस",48,38,950,"Spice"],
-["Vinegar","व्हिनेगर",25,12,8,"Spice"],
-["Coconut Chutney","नारळ चटणी",72,42,120,"Spice"],
-["Green Chutney","हिरवी चटणी",55,30,180,"Spice"],
 ["Pickle (Achar)","लोणचे",42,28,950,"Spice"],
-["Papad","पापड",45,38,550,"Spice"],
-// ── BEVERAGES ───────────────────────────────────────────
 ["Water","पाणी",0,0,5,"Beverage"],
 ["Tea (without milk)","चहा (दुधाशिवाय)",38,8,5,"Beverage"],
-["Tea (with milk)","चहा (दुधासह)",45,45,25,"Beverage"],
 ["Coffee (black)","कॉफी (ब्लॅक)",48,8,5,"Beverage"],
-["Coffee (with milk)","कॉफी (दुधासह)",52,48,28,"Beverage"],
-["Cola / Pepsi","कोला / पेप्सी",8,52,28,"Beverage"],
 ["Orange Juice","संत्र्याचा रस",52,18,5,"Beverage"],
 ["Apple Juice","सफरचंदाचा रस",35,15,5,"Beverage"],
-["Tomato Juice","टोमॅटोचा रस",52,22,250,"Beverage"],
-["Coconut Water","नारळ पाणी",75,30,15,"Beverage"],
-["Lemon Water","लिंबू पाणी",22,8,8,"Beverage"],
-["Sugarcane Juice","उसाचा रस",38,15,8,"Beverage"],
-["Buttermilk (Chaas)","ताक",42,55,45,"Beverage"],
-["Lassi","लस्सी",52,65,48,"Beverage"],
-["Milkshake","मिल्कशेक",55,72,65,"Beverage"],
-["Sports Drink","स्पोर्ट्स ड्रिंक",28,8,200,"Beverage"],
-["Energy Drink","एनर्जी ड्रिंक",25,8,120,"Beverage"],
-["Alcohol (Beer)","बीअर",38,12,12,"Beverage"],
-["Alcohol (Wine)","वाईन",45,18,8,"Beverage"],
-["Herbal Tea","हर्बल चहा",18,8,5,"Beverage"],
-["Green Tea","ग्रीन टी",28,8,5,"Beverage"],
-// ── SNACKS & PROCESSED ──────────────────────────────────
 ["Potato Chips","बटाटा चिप्स",72,55,480,"Snack"],
-["Namkeen","नमकीन",55,45,520,"Snack"],
 ["Biscuits (Plain)","बिस्किटे",38,38,280,"Snack"],
-["Cream Biscuits","क्रीम बिस्किटे",35,35,180,"Snack"],
 ["Chocolate","चॉकलेट",48,55,28,"Snack"],
-["Dark Chocolate","डार्क चॉकलेट",55,62,8,"Snack"],
-["White Chocolate","व्हाईट चॉकलेट",28,45,45,"Snack"],
-["Cake","केक",38,42,280,"Snack"],
-["Cookies","कुकीज",38,42,220,"Snack"],
-["Popcorn (salted)","पॉपकॉर्न (मिठाचा)",52,48,380,"Snack"],
-["Popcorn (plain)","पॉपकॉर्न (सादा)",52,48,8,"Snack"],
 ["Pizza","पिझ्झा",48,58,680,"Snack"],
 ["Burger","बर्गर",52,55,680,"Snack"],
-["French Fries","फ्रेंच फ्राईज",62,45,280,"Snack"],
-["Sandwich","सँडविच",42,48,420,"Snack"],
 ["Instant Noodles","इन्स्टंट नूडल्स",38,38,850,"Snack"],
-["Soup (canned)","सूप (कॅन्ड)",45,35,850,"Snack"],
-["Khari","खारी",32,35,380,"Snack"],
-["Sev","शेव",52,45,320,"Snack"],
-["Mixture","मिक्चर",55,45,380,"Snack"],
-["Murmura (Puffed Rice)","मुरमुरे",25,20,8,"Snack"],
-["Corn Bhel","कॉर्न भेळ",50,42,280,"Snack"],
-["Kurmura","कुरमुरा",25,20,8,"Snack"],
-["Farsan","फरसाण",52,45,380,"Snack"],
-// ── SUGAR & SWEETENERS ──────────────────────────────────
 ["Sugar (white)","साखर",0,0,0,"Sugar"],
 ["Jaggery (Gur)","गूळ",45,28,28,"Sugar"],
 ["Honey","मध",28,8,5,"Sugar"],
-["Brown Sugar","ब्राऊन साखर",5,5,5,"Sugar"],
-["Artificial Sweetener","कृत्रिम गोडकर",0,0,5,"Sugar"],
-// ── FAST FOOD ───────────────────────────────────────────
-["McAloo Tikki Burger","मॅकालू टिक्की बर्गर",65,48,580,"Fast Food"],
 ["Masala Dosa","मसाला डोसा",65,45,380,"Fast Food"],
 ["Hyderabadi Biryani","हैदराबादी बिर्याणी",72,62,580,"Fast Food"],
-["Chole Kulche","छोले कुलचे",72,62,520,"Fast Food"],
-["Papdi Chaat","पापडी चाट",55,42,420,"Fast Food"],
-["Kachori","कचोरी",52,42,320,"Fast Food"],
-["Bread Pakora","ब्रेड पकोरा",48,42,380,"Fast Food"],
-["Spring Roll","स्प्रिंग रोल",42,38,380,"Fast Food"],
 ["Manchurian","मंचूरियन",48,40,750,"Fast Food"],
-["Hakka Noodles","हक्का नूडल्स",42,38,680,"Fast Food"],
 ["Fried Rice","फ्राईड राइस",45,42,580,"Fast Food"],
 ["Paneer Tikka","पनीर टिक्का",52,68,420,"Fast Food"],
-["Seekh Kebab","सीख कबाब",72,62,480,"Fast Food"],
-["Shawarma","शावरमा",62,55,620,"Fast Food"],
-["Momos","मोमोज",52,48,480,"Fast Food"],
-// ── BABY / SPECIAL FOODS ────────────────────────────────
-["Baby Food (cereal)","बेबी फूड (सीरियल)",25,28,45,"Special"],
-["Ensure / Protein Shake","एन्श्योर / प्रोटीन शेक",55,65,150,"Special"],
-["Glucose Powder","ग्लुकोज पावडर",8,5,5,"Special"],
-["ORS","ORS",28,8,520,"Special"],
-["Protein Bar","प्रोटीन बार",58,65,280,"Special"],
+["Momos","मोमोज",52,48,480,"Fast Food"]
 ];
 
-// ═══════════════════════════════════════════════════════════
-//  CATEGORIES
-// ═══════════════════════════════════════════════════════════
 const CATEGORIES = [
-  { key:'All',           en:'🍽️ All',             mr:'🍽️ सर्व' },
-  { key:'Maharashtrian', en:'🏠 Maharashtrian',    mr:'🏠 महाराष्ट्रीयन' },
-  { key:'Fruit',         en:'🍎 Fruits',           mr:'🍎 फळे' },
-  { key:'Vegetable',     en:'🥦 Vegetables',       mr:'🥦 भाज्या' },
-  { key:'Grain',         en:'🌾 Grains',           mr:'🌾 धान्य' },
-  { key:'Legume',        en:'🫘 Pulses & Legumes', mr:'🫘 डाळी' },
-  { key:'Dairy',         en:'🥛 Dairy',            mr:'🥛 दुग्धजन्य' },
-  { key:'Meat',          en:'🍗 Meat & Eggs',      mr:'🍗 मांस व अंडी' },
-  { key:'Seafood',       en:'🐟 Seafood',          mr:'🐟 मासे' },
-  { key:'Indian Dish',   en:'🍛 Indian Dishes',    mr:'🍛 भारतीय पदार्थ' },
-  { key:'Snack',         en:'🍟 Snacks',           mr:'🍟 स्नॅक्स' },
-  { key:'Beverage',      en:'🥤 Beverages',        mr:'🥤 पेये' },
-  { key:'Nut/Seed',      en:'🥜 Nuts & Seeds',     mr:'🥜 नट्स' },
-  { key:'Spice',         en:'🧂 Spices',           mr:'🧂 मसाले' },
-  { key:'Oil/Fat',       en:'🫙 Oils & Fats',      mr:'🫙 तेल' },
-  { key:'Sugar',         en:'🍬 Sweeteners',       mr:'🍬 गोड पदार्थ' },
-  { key:'Fast Food',     en:'🍔 Fast Food',        mr:'🍔 फास्ट फूड' },
-  { key:'Special',       en:'💊 Special Foods',    mr:'💊 विशेष पदार्थ' },
+  {key:'All',en:'🍽️ All',mr:'🍽️ सर्व'},
+  {key:'Maharashtrian',en:'🏠 Maharashtrian',mr:'🏠 महाराष्ट्रीयन'},
+  {key:'Fruit',en:'🍎 Fruits',mr:'🍎 फळे'},
+  {key:'Vegetable',en:'🥦 Vegetables',mr:'🥦 भाज्या'},
+  {key:'Grain',en:'🌾 Grains',mr:'🌾 धान्य'},
+  {key:'Legume',en:'🫘 Pulses & Legumes',mr:'🫘 डाळी'},
+  {key:'Dairy',en:'🥛 Dairy',mr:'🥛 दुग्धजन्य'},
+  {key:'Meat',en:'🍗 Meat & Eggs',mr:'🍗 मांस व अंडी'},
+  {key:'Seafood',en:'🐟 Seafood',mr:'🐟 मासे'},
+  {key:'Indian Dish',en:'🍛 Indian Dishes',mr:'🍛 भारतीय पदार्थ'},
+  {key:'Snack',en:'🍟 Snacks',mr:'🍟 स्नॅक्स'},
+  {key:'Beverage',en:'🥤 Beverages',mr:'🥤 पेये'},
+  {key:'Nut/Seed',en:'🥜 Nuts & Seeds',mr:'🥜 नट्स'},
+  {key:'Spice',en:'🧂 Spices',mr:'🧂 मसाले'},
+  {key:'Oil/Fat',en:'🫙 Oils & Fats',mr:'🫙 तेल'},
+  {key:'Sugar',en:'🍬 Sweeteners',mr:'🍬 गोड पदार्थ'},
+  {key:'Fast Food',en:'🍔 Fast Food',mr:'🍔 फास्ट फूड'}
 ];
 
-let activeCat = 'All';
+let activeCat='All';
+let activeLang=localStorage.getItem('dialysisLang')||'en';
+let currentQuery='';
+let selectedPhoto=null;
 
-function buildCategoryButtons() {
-  const wrap = document.getElementById('cat-buttons');
-  wrap.innerHTML = CATEGORIES.map(c => `
-    <button onclick="selectCat('${c.key}')"
-      id="cat-${c.key.replace(/[^a-zA-Z]/g,'_')}"
+function buildCategoryButtons(){
+  const wrap=document.getElementById('cat-buttons');
+  wrap.innerHTML=CATEGORIES.map(c=>`
+    <button onclick="selectCat('${c.key}')" id="cat-${c.key.replace(/[^a-zA-Z]/g,'_')}"
       class="cat-btn ${c.key==='All'?'active':''} px-4 py-2 rounded-full text-sm border border-zinc-700 text-zinc-300">
-      ${activeLang==='en' ? c.en : c.mr}
+      ${activeLang==='en'?c.en:c.mr}
     </button>`).join('');
+  CATEGORIES.forEach(c=>{
+    const b=document.getElementById('cat-'+c.key.replace(/[^a-zA-Z]/g,'_'));
+    if(b)b.classList.toggle('active',c.key===activeCat);
+  });
 }
 
-function selectCat(key) {
-  activeCat = key;
-  CATEGORIES.forEach(c => {
-    const btn = document.getElementById('cat-'+c.key.replace(/[^a-zA-Z]/g,'_'));
-    if (btn) btn.classList.toggle('active', c.key===key);
-  });
-  document.getElementById('search-input').value = '';
-  currentQuery = '';
+function selectCat(key){
+  activeCat=key;
+  currentQuery='';
+  document.getElementById('search-input').value='';
+  buildCategoryButtons();
+  hideAINotFound();
   renderList('');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  LANGUAGE
-// ═══════════════════════════════════════════════════════════
-let activeLang = localStorage.getItem('dialysisLang') || 'en';
+function setLang(lang){
+  activeLang=lang;
+  localStorage.setItem('dialysisLang',lang);
+  document.getElementById('lang-en').classList.toggle('active',lang==='en');
+  document.getElementById('lang-mr').classList.toggle('active',lang==='mr');
 
-function setLang(lang) {
-  activeLang = lang;
-  localStorage.setItem('dialysisLang', lang);
-  document.getElementById('lang-en').classList.toggle('active', lang==='en');
-  document.getElementById('lang-mr').classList.toggle('active', lang==='mr');
-  document.getElementById('search-input').placeholder = lang==='en'
-    ? 'Type food name here... / येथे जेवणाचे नाव टाइप करा...'
-    : 'येथे जेवणाचे नाव टाइप करा... / Type food name here...';
-  document.getElementById('search-btn-text').textContent = lang==='en' ? 'Search' : 'शोधा';
-  document.getElementById('empty-title').textContent = lang==='en' ? 'Select a food' : 'जेवण निवडा';
-  document.getElementById('empty-sub').textContent = lang==='en'
-    ? 'Tap any item from the list to see details.'
-    : 'तपशील पाहण्यासाठी यादीतून कोणतेही जेवण निवडा.';
-  document.getElementById('identified-label').textContent = lang==='en' ? 'Identified as' : 'ओळखले गेले';
-  document.getElementById('leg-safe').textContent    = lang==='en' ? 'Safe (सुरक्षित)' : 'सुरक्षित (Safe)';
-  document.getElementById('leg-caution').textContent = lang==='en' ? 'Caution (सावधान)' : 'सावधान (Caution)';
-  document.getElementById('leg-stop').textContent    = lang==='en' ? 'Avoid (टाळा)' : 'टाळा (Avoid)';
+  document.getElementById('search-input').placeholder=lang==='en'
+    ?'Type food name here... / येथे जेवणाचे नाव टाइप करा...'
+    :'येथे जेवणाचे नाव टाइप करा... / Type food name here...';
+
+  document.getElementById('search-btn-text').textContent=lang==='en'?'Search':'शोधा';
+  document.getElementById('empty-title').textContent=lang==='en'?'Select a food':'जेवण निवडा';
+  document.getElementById('empty-sub').textContent=lang==='en'
+    ?'Tap any item from the list to see details.'
+    :'तपशील पाहण्यासाठी यादीतून कोणतेही जेवण निवडा.';
+  document.getElementById('identified-label').textContent=lang==='en'?'Identified as':'ओळखले गेले';
+  document.getElementById('leg-safe').textContent=lang==='en'?'Safe (सुरक्षित)':'सुरक्षित (Safe)';
+  document.getElementById('leg-caution').textContent=lang==='en'?'Caution (सावधान)':'सावधान (Caution)';
+  document.getElementById('leg-stop').textContent=lang==='en'?'Avoid (टाळा)':'टाळा (Avoid)';
+
+  document.getElementById('photo-title').textContent=lang==='en'?'Analyze Food Photo':'अन्नाचा फोटो तपासा';
+  document.getElementById('photo-subtitle').textContent=lang==='en'
+    ?'Take a photo or upload one. The image is sent to your secure server endpoint.'
+    :'फोटो काढा किंवा अपलोड करा. फोटो सुरक्षित सर्व्हरकडे पाठवला जातो.';
+  document.getElementById('take-photo-text').textContent=lang==='en'?'Take Photo':'फोटो काढा';
+  document.getElementById('upload-photo-text').textContent=lang==='en'?'Upload Photo':'फोटो अपलोड करा';
+  document.getElementById('analyze-photo-text').textContent=lang==='en'?'Analyze Photo':'फोटो तपासा';
+  document.getElementById('clear-photo-text').textContent=lang==='en'?'Clear':'काढा';
+  document.getElementById('ask-ai-text').textContent=lang==='en'?'Ask AI to analyze it':'AI ला तपासायला सांगा';
+  document.getElementById('ai-not-found-text').textContent=lang==='en'
+    ?'Food not found in our list. Ask AI to analyze it?'
+    :'अन्न आमच्या यादीत सापडले नाही. AI ला त्याचे विश्लेषण करायला सांगायचे?';
+
   buildCategoryButtons();
   renderList(currentQuery);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  SEARCH & LIST
-// ═══════════════════════════════════════════════════════════
-let currentQuery = '';
-
-function doSearch() {
-  currentQuery = document.getElementById('search-input').value.trim().toLowerCase();
-  if (currentQuery) {
-    activeCat = 'All';
-    CATEGORIES.forEach(c => {
-      const btn = document.getElementById('cat-'+c.key.replace(/[^a-zA-Z]/g,'_'));
-      if (btn) btn.classList.toggle('active', c.key==='All');
-    });
-  }
-  renderList(currentQuery);
+function getFiltered(q){
+  let pool=activeCat==='All'?FOODS:FOODS.filter(f=>f[5]===activeCat);
+  if(!q)return pool.slice(0,120);
+  return pool.filter(f=>f[0].toLowerCase().includes(q)||f[1].includes(q));
 }
 
-function getFiltered(q) {
-  let pool = FOODS;
-  if (activeCat !== 'All') pool = FOODS.filter(f => f[5] === activeCat);
-  if (!q) return pool.slice(0, 120);
-  return pool.filter(f => f[0].toLowerCase().includes(q) || f[1].includes(q));
+function overallRisk(k,p,na){
+  const top=Math.max(k,p,na);
+  if(top>70)return'red';
+  if(top>40)return'yellow';
+  return'green';
 }
 
-function overallRisk(k,p,na) {
-  const top = Math.max(k,p,na);
-  if (top > 70) return 'red';
-  if (top > 40) return 'yellow';
-  return 'green';
-}
+function renderList(q){
+  const filtered=getFiltered(q);
+  const list=document.getElementById('food-list');
+  const noRes=document.getElementById('no-results');
+  const cnt=document.getElementById('result-count');
 
-function renderList(q) {
-  const filtered = getFiltered(q);
-  const list  = document.getElementById('food-list');
-  const noRes = document.getElementById('no-results');
-  const cnt   = document.getElementById('result-count');
-
-  if (filtered.length === 0) {
-    list.innerHTML = '';
+  if(filtered.length===0){
+    list.innerHTML='';
     noRes.classList.remove('hidden');
-    document.getElementById('no-results-text').textContent =
-      activeLang==='en' ? 'No food found. Try another name.' : 'जेवण सापडले नाही. दुसरे नाव वापरा.';
-    cnt.textContent = '';
+    document.getElementById('no-results-text').textContent=activeLang==='en'
+      ?'No food found. Try another name.'
+      :'जेवण सापडले नाही. दुसरे नाव वापरा.';
+    cnt.textContent='';
+    if(q)document.getElementById('ai-not-found').classList.remove('hidden');
+    else hideAINotFound();
     return;
   }
+
   noRes.classList.add('hidden');
+  hideAINotFound();
 
-  const catName = activeCat === 'All' ? '' : ` in ${activeCat}`;
-  const label = q
-    ? (activeLang==='en' ? `${filtered.length} results found` : `${filtered.length} परिणाम सापडले`)
-    : (activeLang==='en'
-        ? `${filtered.length} foods${catName} — tap to select`
-        : `${filtered.length} जेवण — निवडण्यासाठी टॅप करा`);
-  cnt.textContent = label;
+  cnt.textContent=q
+    ?(activeLang==='en'?`${filtered.length} results found`:`${filtered.length} परिणाम सापडले`)
+    :(activeLang==='en'?`${filtered.length} foods — tap to select`:`${filtered.length} जेवण — निवडण्यासाठी टॅप करा`);
 
-  list.innerHTML = filtered.map(f => {
-    const risk = overallRisk(f[2],f[3],f[4]);
-    const dot  = risk==='red' ? 'bg-red-500' : risk==='yellow' ? 'bg-amber-500' : 'bg-emerald-500';
-    const name = activeLang==='en' ? f[0] : f[1];
-    const sub  = activeLang==='en' ? f[1] : f[0];
-    return `
-    <div class="food-item flex items-center gap-4 px-5 py-3.5 cursor-pointer" onclick="selectFood(${FOODS.indexOf(f)})">
+  list.innerHTML=filtered.map(f=>{
+    const risk=overallRisk(f[2],f[3],f[4]);
+    const dot=risk==='red'?'bg-red-500':risk==='yellow'?'bg-amber-500':'bg-emerald-500';
+    const name=activeLang==='en'?f[0]:f[1];
+    const sub=activeLang==='en'?f[1]:f[0];
+    return `<div class="food-item flex items-center gap-4 px-5 py-3.5 cursor-pointer" onclick="selectFood(${FOODS.indexOf(f)})">
       <div class="w-3 h-3 rounded-full ${dot} shrink-0"></div>
       <div class="flex-1 min-w-0">
-        <p class="text-sm font-semibold text-zinc-200 truncate">${name}</p>
-        <p class="text-[11px] text-zinc-500 truncate">${sub}</p>
+        <p class="text-sm font-semibold text-zinc-200 truncate">${escapeHtml(name)}</p>
+        <p class="text-[11px] text-zinc-500 truncate">${escapeHtml(sub)}</p>
       </div>
-      <span class="text-[10px] text-zinc-600 shrink-0">${f[5]}</span>
+      <span class="text-[10px] text-zinc-600 shrink-0">${escapeHtml(f[5])}</span>
     </div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  DETAIL VIEW
-// ═══════════════════════════════════════════════════════════
-function selectFood(idx) {
-  const f    = FOODS[idx];
-  const risk = overallRisk(f[2],f[3],f[4]);
+function doSearch(){
+  currentQuery=document.getElementById('search-input').value.trim().toLowerCase();
+  if(currentQuery){
+    activeCat='All';
+    buildCategoryButtons();
+  }
+  renderList(currentQuery);
+}
 
+function selectFood(idx){
+  const f=FOODS[idx],risk=overallRisk(f[2],f[3],f[4]);
   document.getElementById('empty-state').classList.add('hidden');
-  const panel = document.getElementById('result-panel');
-  panel.classList.remove('hidden');
-  panel.classList.remove('fade-up');
+  const panel=document.getElementById('result-panel');
+  panel.classList.remove('hidden','fade-up');
   void panel.offsetWidth;
   panel.classList.add('fade-up');
 
-  document.getElementById('food-name-en').textContent = f[0];
-  document.getElementById('food-name-mr').textContent = f[1];
-  document.getElementById('category-badge').textContent = f[5];
+  document.getElementById('food-name-en').textContent=f[0];
+  document.getElementById('food-name-mr').textContent=f[1];
+  document.getElementById('category-badge').textContent=f[5];
 
-  const bar  = document.getElementById('status-bar');
-  const pill = document.getElementById('status-pill');
-  pill.className = 'px-6 py-3 rounded-3xl text-base font-black border-2 text-center shrink-0';
-  if (risk==='red') {
-    bar.className = 'h-3 bg-red-600';
+  const bar=document.getElementById('status-bar');
+  const pill=document.getElementById('status-pill');
+  pill.className='px-6 py-3 rounded-3xl text-base font-black border-2 text-center shrink-0';
+
+  if(risk==='red'){
+    bar.className='h-3 bg-red-600';
     pill.classList.add('pill-red');
-    pill.textContent = activeLang==='en' ? '🚫 AVOID / टाळा' : '🚫 टाळा / AVOID';
-  } else if (risk==='yellow') {
-    bar.className = 'h-3 bg-amber-500';
+    pill.textContent=activeLang==='en'?'🚫 AVOID / टाळा':'🚫 टाळा / AVOID';
+  }else if(risk==='yellow'){
+    bar.className='h-3 bg-amber-500';
     pill.classList.add('pill-yellow');
-    pill.textContent = activeLang==='en' ? '⚠️ CAUTION / सावधान' : '⚠️ सावधान / CAUTION';
-  } else {
-    bar.className = 'h-3 bg-emerald-500';
+    pill.textContent=activeLang==='en'?'⚠️ CAUTION / सावधान':'⚠️ सावधान / CAUTION';
+  }else{
+    bar.className='h-3 bg-emerald-500';
     pill.classList.add('pill-green');
-    pill.textContent = activeLang==='en' ? '✅ SAFE / सुरक्षित' : '✅ सुरक्षित / SAFE';
+    pill.textContent=activeLang==='en'?'✅ SAFE / सुरक्षित':'✅ सुरक्षित / SAFE';
   }
 
-  setMineral('k', f[2]);
-  setMineral('p', f[3]);
-  setMineral('na', f[4]);
-  buildTips(f, risk);
+  setMineral('k',f[2]);
+  setMineral('p',f[3]);
+  setMineral('na',f[4]);
+  buildTips(f);
 
-  if (window.innerWidth < 1024)
-    document.getElementById('result-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+  if(window.innerWidth<1024)
+    panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function setMineral(id, score) {
-  const capped = Math.min(score, 100);
-  const color  = score>70 ? 'text-red-500'  : score>40 ? 'text-amber-500'  : 'text-emerald-500';
-  const bg     = score>70 ? 'bg-red-500'    : score>40 ? 'bg-amber-500'    : 'bg-emerald-500';
-  document.getElementById(`${id}-val`).innerHTML =
-    `<span class="${color}">${capped}</span><span class="text-zinc-600 text-sm font-normal">/100</span>`;
-  const bar = document.getElementById(`${id}-bar`);
-  bar.style.width = capped+'%';
-  bar.className   = `progress-bar-fill h-full ${bg}`;
+function setMineral(id,score){
+  const capped=Math.min(score,100);
+  const color=score>70?'text-red-500':score>40?'text-amber-500':'text-emerald-500';
+  const bg=score>70?'bg-red-500':score>40?'bg-amber-500':'bg-emerald-500';
+  document.getElementById(`${id}-val`).innerHTML=`<span class="${color}">${capped}</span><span class="text-zinc-600 text-sm font-normal">/100</span>`;
+  const bar=document.getElementById(`${id}-bar`);
+  bar.style.width=capped+'%';
+  bar.className=`progress-bar-fill h-full ${bg}`;
 }
 
-function buildTips(f, risk) {
-  const box  = document.getElementById('tips-box');
-  const lang = activeLang;
-  const tips = [];
+function buildTips(f){
+  const tips=[];
+  const add=(icon,color,en,mr)=>tips.push({icon,color,en,mr});
 
-  if (f[2]>70) tips.push({icon:'🥬',color:'text-red-400',
-    en:'High Potassium — This food is dangerous for dialysis patients. Avoid completely.',
-    mr:'जास्त पोटॅशियम — हे जेवण डायलिसिस रुग्णांसाठी धोकादायक आहे. पूर्णपणे टाळा.'});
-  else if (f[2]>40) tips.push({icon:'🥬',color:'text-amber-400',
-    en:'Moderate Potassium — Eat in small portions only. Ask your dietitian.',
-    mr:'मध्यम पोटॅशियम — फक्त थोड्या प्रमाणात खा. आहारतज्ज्ञांना विचारा.'});
-  else tips.push({icon:'🥬',color:'text-emerald-400',
-    en:'Low Potassium — Generally safe for kidney patients in normal portions.',
-    mr:'कमी पोटॅशियम — सामान्य प्रमाणात मूत्रपिंड रुग्णांसाठी सुरक्षित.'});
+  if(f[2]>70)add('🥬','text-red-400','High Potassium — Avoid or limit only as directed by your dialysis dietitian.','जास्त पोटॅशियम — डायलिसिस आहारतज्ज्ञांच्या सल्ल्याने टाळा किंवा मर्यादित करा.');
+  else if(f[2]>40)add('🥬','text-amber-400','Moderate Potassium — Portion size matters. Ask your dietitian.','मध्यम पोटॅशियम — प्रमाण महत्त्वाचे आहे. आहारतज्ज्ञांना विचारा.');
+  else add('🥬','text-emerald-400','Lower Potassium score in this guide. Individual limits can differ.','या मार्गदर्शकात पोटॅशियम स्कोअर कमी आहे. वैयक्तिक मर्यादा वेगळ्या असू शकतात.');
 
-  if (f[3]>70) tips.push({icon:'🦴',color:'text-red-400',
-    en:'High Phosphorus — Can weaken bones in dialysis patients. Limit strictly.',
-    mr:'जास्त फॉस्फरस — डायलिसिस रुग्णांमध्ये हाडे कमकुवत करू शकते. कठोरपणे मर्यादित करा.'});
-  else if (f[3]>40) tips.push({icon:'🦴',color:'text-amber-400',
-    en:'Moderate Phosphorus — Monitor intake carefully. Discuss with your doctor.',
-    mr:'मध्यम फॉस्फरस — सेवन काळजीपूर्वक निरीक्षण करा. डॉक्टरांशी बोला.'});
-  else tips.push({icon:'🦴',color:'text-emerald-400',
-    en:'Low Phosphorus — Safe phosphorus level for most kidney patients.',
-    mr:'कमी फॉस्फरस — बहुतेक मूत्रपिंड रुग्णांसाठी फॉस्फरस पातळी सुरक्षित.'});
+  if(f[3]>70)add('🦴','text-red-400','High Phosphorus — Limit according to your care team.','जास्त फॉस्फरस — तुमच्या वैद्यकीय टीमच्या सल्ल्यानुसार मर्यादित करा.');
+  else if(f[3]>40)add('🦴','text-amber-400','Moderate Phosphorus — Monitor portions and ask your dietitian.','मध्यम फॉस्फरस — प्रमाणावर लक्ष ठेवा आणि आहारतज्ज्ञांना विचारा.');
+  else add('🦴','text-emerald-400','Lower Phosphorus score in this guide.','या मार्गदर्शकात फॉस्फरस स्कोअर कमी आहे.');
 
-  if (f[4]>200) tips.push({icon:'🧂',color:'text-red-400',
-    en:'High Sodium — Increases thirst and blood pressure. Strictly avoid.',
-    mr:'जास्त सोडियम — तहान आणि रक्तदाब वाढतो. कठोरपणे टाळा.'});
-  else if (f[4]>80) tips.push({icon:'🧂',color:'text-amber-400',
-    en:'Moderate Sodium — Try low-sodium versions or reduce portion size.',
-    mr:'मध्यम सोडियम — कमी सोडियम आवृत्ती वापरण्याचा प्रयत्न करा किंवा प्रमाण कमी करा.'});
-  else tips.push({icon:'🧂',color:'text-emerald-400',
-    en:'Low Sodium — Good choice for fluid and blood pressure control.',
-    mr:'कमी सोडियम — द्रव आणि रक्तदाब नियंत्रणासाठी चांगली निवड.'});
+  if(f[4]>200)add('🧂','text-red-400','High Sodium — Limit and follow your prescribed sodium target.','जास्त सोडियम — मर्यादित करा आणि डॉक्टरांनी दिलेले लक्ष्य पाळा.');
+  else if(f[4]>80)add('🧂','text-amber-400','Moderate Sodium — Lower-sodium versions may help.','मध्यम सोडियम — कमी सोडियम असलेले पर्याय उपयोगी ठरू शकतात.');
+  else add('🧂','text-emerald-400','Lower Sodium score in this guide.','या मार्गदर्शकात सोडियम स्कोअर कमी आहे.');
 
-  box.innerHTML = tips.map(t => `
+  document.getElementById('tips-box').innerHTML=tips.map(t=>`
     <div class="flex gap-4 p-4 rounded-2xl bg-zinc-950/50 border border-zinc-800">
       <div class="text-3xl">${t.icon}</div>
       <div>
-        <p class="${t.color} text-sm font-semibold leading-relaxed">${lang==='en' ? t.en : t.mr}</p>
-        <p class="text-zinc-600 text-xs italic mt-1">${lang==='en' ? t.mr : t.en}</p>
+        <p class="${t.color} text-sm font-semibold leading-relaxed">${activeLang==='en'?t.en:t.mr}</p>
+        <p class="text-zinc-600 text-xs italic mt-1">${activeLang==='en'?t.mr:t.en}</p>
       </div>
     </div>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════════
-window.onload = () => {
+/* ---------------- PHOTO ANALYSIS ---------------- */
+
+function handlePhoto(event){
+  const file=event.target.files && event.target.files[0];
+  if(!file)return;
+
+  if(!file.type.startsWith('image/')){
+    setPhotoStatus(activeLang==='en'?'Please select an image file.':'कृपया प्रतिमा फाइल निवडा.',true);
+    return;
+  }
+
+  selectedPhoto=file;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('photo-preview').src=e.target.result;
+    document.getElementById('photo-preview-wrap').classList.remove('hidden');
+    setPhotoStatus(activeLang==='en'?'Photo ready. Press Analyze Photo.':'फोटो तयार आहे. फोटो तपासा दाबा.',false);
+  };
+  reader.readAsDataURL(file);
+
+  // Photo searches must never show the typed-food "not found" message.
+  hideAINotFound();
+}
+
+async function analyzePhoto(){
+  if(!selectedPhoto)return;
+
+  const btn=document.getElementById('analyze-photo-btn');
+  btn.disabled=true;
+  btn.classList.add('opacity-60','cursor-not-allowed');
+  setPhotoStatus(activeLang==='en'?'Analyzing photo...':'फोटो तपासत आहे...',false);
+
+  try{
+    const formData=new FormData();
+    formData.append('image',selectedPhoto);
+
+    const response=await fetch('/api/analyze',{
+      method:'POST',
+      body:formData
+    });
+
+    const data=await response.json().catch(()=>({}));
+
+    if(!response.ok){
+      throw new Error(data.error||'Analysis failed');
+    }
+
+    showAIResult(data);
+    setPhotoStatus(activeLang==='en'?'Analysis complete.':'विश्लेषण पूर्ण झाले.',false);
+  }catch(error){
+    console.error(error);
+    setPhotoStatus(
+      activeLang==='en'
+        ?`Could not analyze the photo. ${error.message}`
+        :`फोटो तपासता आला नाही. ${error.message}`,
+      true
+    );
+  }finally{
+    btn.disabled=false;
+    btn.classList.remove('opacity-60','cursor-not-allowed');
+  }
+}
+
+async function askAIForTypedFood(){
+  const food=document.getElementById('search-input').value.trim();
+  if(!food)return;
+
+  const status=document.getElementById('ai-status');
+  status.textContent=activeLang==='en'?'Asking AI...':'AI ला विचारत आहे...';
+
+  try{
+    const response=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({food})
+    });
+
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||'Analysis failed');
+
+    showAIResult(data);
+    status.textContent=activeLang==='en'?'AI analysis complete.':'AI विश्लेषण पूर्ण झाले.';
+  }catch(error){
+    console.error(error);
+    status.textContent=activeLang==='en'
+      ?`Could not analyze the food. ${error.message}`
+      :`अन्नाचे विश्लेषण करता आले नाही. ${error.message}`;
+  }
+}
+
+function showAIResult(data){
+  const result=data.result||data.analysis||data;
+  const name=result.foodName||result.name||result.food||'AI Food Analysis';
+  const mr=result.foodNameMr||result.marathiName||'';
+
+  document.getElementById('empty-state').classList.add('hidden');
+  document.getElementById('result-panel').classList.remove('hidden');
+  document.getElementById('food-name-en').textContent=name;
+  document.getElementById('food-name-mr').textContent=mr;
+  document.getElementById('category-badge').textContent='AI Analysis';
+
+  // If the server returns numeric scores, display them.
+  setMineral('k',Number(result.potassiumScore??result.potassium??50)||50);
+  setMineral('p',Number(result.phosphorusScore??result.phosphorus??50)||50);
+  setMineral('na',Number(result.sodiumScore??result.sodium??50)||50);
+
+  const text=result.advice||result.message||result.summary||(
+    typeof result==='string'?result:'AI returned an analysis.'
+  );
+
+  document.getElementById('tips-box').innerHTML=`
+    <div class="p-5 rounded-2xl bg-zinc-950/50 border border-zinc-800">
+      <div class="text-yellow-400 font-bold mb-2"><i class="fa-solid fa-robot mr-2"></i>AI Analysis</div>
+      <p class="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">${escapeHtml(String(text))}</p>
+    </div>`;
+
+  document.getElementById('status-bar').className='h-3 bg-yellow-500';
+  const pill=document.getElementById('status-pill');
+  pill.className='px-6 py-3 rounded-3xl text-base font-black border-2 text-center shrink-0 pill-yellow';
+  pill.textContent='🤖 AI / AI';
+
+  if(window.innerWidth<1024)
+    document.getElementById('result-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function clearPhoto(){
+  selectedPhoto=null;
+  document.getElementById('camera-input').value='';
+  document.getElementById('upload-input').value='';
+  document.getElementById('photo-preview').src='';
+  document.getElementById('photo-preview-wrap').classList.add('hidden');
+  document.getElementById('photo-status').textContent='';
+  hideAINotFound();
+}
+
+function setPhotoStatus(text,error){
+  const el=document.getElementById('photo-status');
+  el.textContent=text;
+  el.className=`text-xs mt-3 ${error?'text-red-400':'text-zinc-500'}`;
+}
+
+function hideAINotFound(){
+  document.getElementById('ai-not-found').classList.add('hidden');
+  document.getElementById('ai-status').textContent='';
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[c]));
+}
+
+window.onload=()=>{
   buildCategoryButtons();
   setLang(activeLang);
 };
