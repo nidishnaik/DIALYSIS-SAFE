@@ -1,12 +1,84 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DialysisSafe Passkey</title><style>body{font-family:system-ui;max-width:520px;margin:8vh auto;padding:24px;background:#09090b;color:#f4f4f5}main{background:#18181b;border:1px solid #3f3f46;border-radius:20px;padding:28px}input,button{width:100%;padding:13px;margin:8px 0;border-radius:12px;box-sizing:border-box}input{background:#09090b;color:white;border:1px solid #52525b}button{border:0;background:#facc15;font-weight:700;cursor:pointer}button.secondary{background:#3f3f46;color:white}.key{display:none;background:#09090b;border:1px solid #52525b;border-radius:12px;padding:12px;word-break:break-all;margin-top:12px}#status{min-height:24px;color:#a1a1aa}</style></head><body><main><h1>DialysisSafe</h1><p>Secure access with a device passkey.</p><input id="username" autocomplete="username webauthn" placeholder="Username for first-time setup"><button id="register">Create passkey</button><button id="login" class="secondary">Use passkey</button><p id="status" role="status"></p><div id="key" class="key"></div></main><script>
-const statusEl=document.querySelector('#status'),usernameEl=document.querySelector('#username'),keyEl=document.querySelector('#key');
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DialysisSafe Login</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{font-family:system-ui,sans-serif;background:#09090b;color:#f4f4f5}.box{background:#18181b;border:1px solid #3f3f46;border-radius:24px}input,button{width:100%;padding:13px;margin-top:10px;border-radius:12px;box-sizing:border-box}input{background:#09090b;color:white;border:1px solid #52525b;outline:none}input:focus{border-color:#facc15}button{border:0;background:#facc15;color:#09090b;font-weight:700;cursor:pointer}button.secondary{background:#3f3f46;color:white}.status{min-height:24px}</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+<main class="box w-full max-w-md p-7 shadow-2xl">
+  <div class="flex items-center gap-3 mb-6">
+    <div class="w-11 h-11 rounded-2xl bg-yellow-400 text-zinc-950 flex items-center justify-center text-xl">🛡️</div>
+    <div><h1 class="text-2xl font-bold">DialysisSafe</h1><p class="text-xs text-zinc-500">Secure login</p></div>
+  </div>
+
+  <label class="text-sm text-zinc-300" for="username">Username</label>
+  <input id="username" autocomplete="username" placeholder="Enter username">
+
+  <label class="block text-sm text-zinc-300 mt-4" for="password">Password</label>
+  <input id="password" type="password" autocomplete="current-password" placeholder="Enter password">
+
+  <button id="password-login">Log in</button>
+  <p id="status" class="status mt-4 text-sm text-zinc-400" role="status"></p>
+
+  <div class="border-t border-zinc-800 my-6"></div>
+  <p class="text-xs text-zinc-500 mb-2">You can also use a device passkey if one has been registered.</p>
+  <button id="passkey-login" class="secondary">Use passkey</button>
+</main>
+
+<script>
+const statusEl=document.getElementById('status');
+const usernameEl=document.getElementById('username');
+const passwordEl=document.getElementById('password');
+
+function setStatus(text,error=false){
+  statusEl.textContent=text;
+  statusEl.className='status mt-4 text-sm '+(error?'text-red-400':'text-zinc-400');
+}
+
+async function post(url,body){
+  const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||'Request failed');
+  return data;
+}
+
+async function passwordLogin(){
+  const username=usernameEl.value.trim();
+  const password=passwordEl.value;
+  if(!username||!password){setStatus('Enter your username and password.',true);return;}
+  const button=document.getElementById('password-login');
+  button.disabled=true;
+  setStatus('Checking login...');
+  try{
+    await post('/api/auth/password/login',{username,password});
+    setStatus('Login successful. Opening DialysisSafe...');
+    location.href='/index.html';
+  }catch(error){setStatus(error.message,true);}
+  finally{button.disabled=false;}
+}
+
+document.getElementById('password-login').onclick=passwordLogin;
+passwordEl.addEventListener('keydown',e=>{if(e.key==='Enter')passwordLogin();});
+
 const b64=s=>{const pad='='.repeat((4-s.length%4)%4);return Uint8Array.from(atob((s+pad).replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));};
 const enc=x=>btoa(String.fromCharCode(...new Uint8Array(x))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
 function prepOptions(o){if(o.challenge)o.challenge=b64(o.challenge);if(o.user?.id)o.user.id=b64(o.user.id);(o.excludeCredentials||[]).forEach(c=>c.id=b64(c.id));(o.allowCredentials||[]).forEach(c=>c.id=b64(c.id));return o;}
-function regResponse(r){return{id:r.id,rawId:enc(r.rawId),type:r.type,response:{clientDataJSON:enc(r.response.clientDataJSON),attestationObject:enc(r.response.attestationObject)}};}
 function authResponse(r){return{id:r.id,rawId:enc(r.rawId),type:r.type,response:{clientDataJSON:enc(r.response.clientDataJSON),authenticatorData:enc(r.response.authenticatorData),signature:enc(r.response.signature),userHandle:r.response.userHandle?enc(r.response.userHandle):null}};}
-async function post(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw Error(d.error||'Request failed');return d;}
-async function createApiKey(){statusEl.textContent='Creating your secure API key…';const d=await post('/api/key/issue',{});keyEl.textContent=d.apiKey;keyEl.style.display='block';statusEl.textContent='Login successful. Your API key was created once; save it securely.';}
-register.onclick=async()=>{try{const username=usernameEl.value.trim();if(!username)throw Error('Enter a username first.');statusEl.textContent='Preparing passkey…';const o=prepOptions(await post('/api/auth/register/options',{username}));const c=await navigator.credentials.create({publicKey:o});await post('/api/auth/register/verify',{username,response:regResponse(c)});await createApiKey();setTimeout(()=>location.href='/index.html',1200);}catch(e){statusEl.textContent=e.message;}};
-login.onclick=async()=>{try{statusEl.textContent='Waiting for your device…';const o=prepOptions(await (await fetch('/api/auth/login/options')).json());const c=await navigator.credentials.get({publicKey:o});await post('/api/auth/login/verify',{response:authResponse(c)});await createApiKey();setTimeout(()=>location.href='/index.html',1200);}catch(e){statusEl.textContent=e.message;}};
-</script></body></html>
+
+async function passkeyLogin(){
+  try{
+    setStatus('Waiting for your device...');
+    const options=prepOptions(await (await fetch('/api/auth/login/options')).json());
+    const credential=await navigator.credentials.get({publicKey:options});
+    await post('/api/auth/login/verify',{response:authResponse(credential)});
+    setStatus('Login successful. Opening DialysisSafe...');
+    location.href='/index.html';
+  }catch(error){setStatus(error.message||'Passkey login failed.',true);}
+}
+document.getElementById('passkey-login').onclick=passkeyLogin;
+</script>
+</body>
+</html>
