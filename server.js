@@ -14,6 +14,7 @@ const RP_NAME = process.env.RP_NAME || 'DialysisSafe';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 const AUTH_USERNAME = String(process.env.AUTH_USERNAME || '').trim();
 const AUTH_PASSWORD_HASH = String(process.env.AUTH_PASSWORD_HASH || '').trim();
+const AUTH_PASSWORD = String(process.env.AUTH_PASSWORD || '');
 const COOKIE_NAME = 'dialysis_safe_session';
 
 const credentials = new Map();
@@ -49,10 +50,21 @@ function createApiKey(username) {
   return apiKey;
 }
 
-// Passwords are never stored in this file. AUTH_PASSWORD_HASH must be a scrypt hash
-// generated with: npm run hash-password -- YourPassword
+// Passwords are never stored in this source file.
+// Preferred deployment setup: AUTH_USERNAME + AUTH_PASSWORD as server environment secrets.
+// Existing AUTH_PASSWORD_HASH is also supported for backwards compatibility.
 function verifyPassword(password) {
-  if (!AUTH_USERNAME || !AUTH_PASSWORD_HASH || !password) return false;
+  if (!AUTH_USERNAME || !password) return false;
+
+  // Simple deployment setup: keep the plaintext password only in the server's secret store.
+  // It is never sent to the browser and never committed to Git.
+  if (AUTH_PASSWORD) {
+    const a = Buffer.from(password);
+    const b = Buffer.from(AUTH_PASSWORD);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  }
+
+  if (!AUTH_PASSWORD_HASH) return false;
   const parts = AUTH_PASSWORD_HASH.split('$');
   if (parts.length !== 3 || parts[0] !== 'scrypt') return false;
   try {
@@ -81,7 +93,7 @@ app.get('/index.html', async (req, res, next) => {
 });
 
 app.get('/api/auth/status', (req, res) => res.json({
-  passwordConfigured: Boolean(AUTH_USERNAME && AUTH_PASSWORD_HASH),
+  passwordConfigured: Boolean(AUTH_USERNAME && (AUTH_PASSWORD || AUTH_PASSWORD_HASH)),
   passkeyConfigured: Boolean(RP_ID && ORIGIN),
   enrolled: credentials.size > 0,
   authenticated: isAuthenticated(req),
@@ -91,7 +103,7 @@ app.get('/api/auth/status', (req, res) => res.json({
 app.post('/api/auth/password/login', (req, res) => {
   const username = String(req.body?.username || '').trim().slice(0, 80);
   const password = String(req.body?.password || '');
-  if (!AUTH_USERNAME || !AUTH_PASSWORD_HASH) {
+  if (!AUTH_USERNAME || (!AUTH_PASSWORD && !AUTH_PASSWORD_HASH)) {
     return res.status(503).json({ error: 'Password login is not configured on the server yet.' });
   }
   if (username !== AUTH_USERNAME || !verifyPassword(password)) {
