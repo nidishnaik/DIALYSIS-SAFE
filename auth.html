@@ -1,84 +1,24 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DialysisSafe Login</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:system-ui,sans-serif;background:#09090b;color:#f4f4f5}.box{background:#18181b;border:1px solid #3f3f46;border-radius:24px}input,button{width:100%;padding:13px;margin-top:10px;border-radius:12px;box-sizing:border-box}input{background:#09090b;color:white;border:1px solid #52525b;outline:none}input:focus{border-color:#facc15}button{border:0;background:#facc15;color:#09090b;font-weight:700;cursor:pointer}button.secondary{background:#3f3f46;color:white}.status{min-height:24px}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DialysisSafe — GitHub Pages</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box; font-family: system-ui, sans-serif; background: #09090b; color: #f4f4f5; }
+    main { width: min(680px, 100%); padding: 32px; border: 1px solid #3f3f46; border-radius: 24px; background: #18181b; box-sizing: border-box; }
+    h1 { margin-top: 0; } p, li { color: #d4d4d8; line-height: 1.55; } .note { padding: 16px; border-left: 4px solid #facc15; background: #27272a; border-radius: 8px; } a { display: inline-block; margin-top: 12px; padding: 12px 16px; border-radius: 12px; background: #facc15; color: #09090b; font-weight: 700; text-decoration: none; } code { color: #facc15; }
+  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6">
-<main class="box w-full max-w-md p-7 shadow-2xl">
-  <div class="flex items-center gap-3 mb-6">
-    <div class="w-11 h-11 rounded-2xl bg-yellow-400 text-zinc-950 flex items-center justify-center text-xl">🛡️</div>
-    <div><h1 class="text-2xl font-bold">DialysisSafe</h1><p class="text-xs text-zinc-500">Secure login</p></div>
-  </div>
-
-  <label class="text-sm text-zinc-300" for="username">Username</label>
-  <input id="username" autocomplete="username" placeholder="Enter username">
-
-  <label class="block text-sm text-zinc-300 mt-4" for="password">Password</label>
-  <input id="password" type="password" autocomplete="current-password" placeholder="Enter password">
-
-  <button id="password-login">Log in</button>
-  <p id="status" class="status mt-4 text-sm text-zinc-400" role="status"></p>
-
-  <div class="border-t border-zinc-800 my-6"></div>
-  <p class="text-xs text-zinc-500 mb-2">You can also use a device passkey if one has been registered.</p>
-  <button id="passkey-login" class="secondary">Use passkey</button>
-</main>
-
-<script>
-const statusEl=document.getElementById('status');
-const usernameEl=document.getElementById('username');
-const passwordEl=document.getElementById('password');
-
-function setStatus(text,error=false){
-  statusEl.textContent=text;
-  statusEl.className='status mt-4 text-sm '+(error?'text-red-400':'text-zinc-400');
-}
-
-async function post(url,body){
-  const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error||'Request failed');
-  return data;
-}
-
-async function passwordLogin(){
-  const username=usernameEl.value.trim();
-  const password=passwordEl.value;
-  if(!username||!password){setStatus('Enter your username and password.',true);return;}
-  const button=document.getElementById('password-login');
-  button.disabled=true;
-  setStatus('Checking login...');
-  try{
-    await post('/api/auth/password/login',{username,password});
-    setStatus('Login successful. Opening DialysisSafe...');
-    location.href='/index.html';
-  }catch(error){setStatus(error.message,true);}
-  finally{button.disabled=false;}
-}
-
-document.getElementById('password-login').onclick=passwordLogin;
-passwordEl.addEventListener('keydown',e=>{if(e.key==='Enter')passwordLogin();});
-
-const b64=s=>{const pad='='.repeat((4-s.length%4)%4);return Uint8Array.from(atob((s+pad).replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));};
-const enc=x=>btoa(String.fromCharCode(...new Uint8Array(x))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-function prepOptions(o){if(o.challenge)o.challenge=b64(o.challenge);if(o.user?.id)o.user.id=b64(o.user.id);(o.excludeCredentials||[]).forEach(c=>c.id=b64(c.id));(o.allowCredentials||[]).forEach(c=>c.id=b64(c.id));return o;}
-function authResponse(r){return{id:r.id,rawId:enc(r.rawId),type:r.type,response:{clientDataJSON:enc(r.response.clientDataJSON),authenticatorData:enc(r.response.authenticatorData),signature:enc(r.response.signature),userHandle:r.response.userHandle?enc(r.response.userHandle):null}};}
-
-async function passkeyLogin(){
-  try{
-    setStatus('Waiting for your device...');
-    const options=prepOptions(await (await fetch('/api/auth/login/options')).json());
-    const credential=await navigator.credentials.get({publicKey:options});
-    await post('/api/auth/login/verify',{response:authResponse(credential)});
-    setStatus('Login successful. Opening DialysisSafe...');
-    location.href='/index.html';
-  }catch(error){setStatus(error.message||'Passkey login failed.',true);}
-}
-document.getElementById('passkey-login').onclick=passkeyLogin;
-</script>
+<body>
+  <main>
+    <h1>DialysisSafe on GitHub Pages</h1>
+    <p>This site is a static GitHub Pages site. It cannot securely verify a username, password, or passkey because it has no private server to keep a secret.</p>
+    <div class="note"><strong>No login is configured here.</strong> Do not enter a real username, password, API key, or health information into a browser-only login page.</div>
+    <p>There is no username or password to change for this Pages version. Putting a password, password hash, or GitHub Actions secret into these website files would expose it to visitors.</p>
+    <p>If you need real access control, use an organization with GitHub Enterprise Cloud private Pages and manage access using GitHub accounts and repository permissions. Otherwise, keep this site public and do not include private data.</p>
+    <a href="index.html">Continue to the public guide</a>
+  </main>
 </body>
 </html>
